@@ -2,7 +2,6 @@ package org.octopus.client;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.StringValue;
-import org.checkerframework.checker.units.qual.C;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;

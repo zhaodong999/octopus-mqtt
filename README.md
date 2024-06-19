@@ -12,3 +12,4 @@
 * 重复做轮子是因为参考了grpc和dubbo,个人感觉grpc对集群的治理偏弱，dubbo又过于复杂
 * octopus-rpc, 不需要client-server同时引用服务接口，加快开发速度，损失了服务一致性
 * 集群模式采用nacos做服务治理
+* 使用javassist 做一个服务接口代理，避免每次请求用反射调用

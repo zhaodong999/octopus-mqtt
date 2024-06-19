@@ -1,0 +1,31 @@
+pluginManagement {
+    repositories {
+        maven{ url 'https://maven.aliyun.com/repository/google'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/public'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'} //修改
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven{ url 'https://maven.aliyun.com/repository/google'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/public'} //修改
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'} //修改
+        google()
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'octopus-mqtt'
+include 'octopus-gateway'
+include 'octopus-rpc'
+include 'octopus-proto'
+include 'octopus-server'
+include 'octopus-client'
+

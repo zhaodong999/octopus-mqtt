@@ -11,6 +11,7 @@ import io.netty.handler.codec.mqtt.MqttDecoder;
 import io.netty.handler.codec.mqtt.MqttEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.octopus.gateway.netty.GatewayHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,9 @@ public class MqttServer implements Closeable {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new MqttDecoder());
+                ch.pipeline().addLast(new IdleStateHandler(60,0,0));
                 ch.pipeline().addLast(MqttEncoder.INSTANCE);
-                ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+                ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
                 ch.pipeline().addLast(GatewayHandler.INSTANCE);
             }
         });

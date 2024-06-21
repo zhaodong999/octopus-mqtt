@@ -131,7 +131,6 @@ public enum GatewayProcessor {
             LOGGER.info("mqtt ping msg: {}", mqttMessage);
             ctx.writeAndFlush(MqttMessage.PINGRESP);
         }
-
     },
 
     DISCONNECT {

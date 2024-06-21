@@ -8,7 +8,6 @@ import java.util.List;
 
 public class RpcDecoder extends ReplayingDecoder<RpcDecoder.DecoderState> {
 
-
     private FixedHeader fixedHeader;
     private VariableHeader variableHeader;
 
@@ -63,6 +62,8 @@ public class RpcDecoder extends ReplayingDecoder<RpcDecoder.DecoderState> {
                 fixedHeader = null;
                 variableHeader = null;
                 break;
+            default:
+                throw new IllegalStateException("Unknown state: " + state());
         }
     }
 

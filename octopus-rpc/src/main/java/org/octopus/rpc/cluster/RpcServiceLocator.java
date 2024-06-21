@@ -69,35 +69,32 @@ public class RpcServiceLocator extends Observable implements Closeable {
     }
 
     public void loadServices() {
-        LOGGER.info("start schedule");
-        pollLoadNewService();
+        LOGGER.info("start schedule load remote rpc serivce");
+        loadNewService();
         service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(() -> {
             try {
-                pollLoadNewService();
+                loadNewService();
             } catch (Exception e) {
-                LOGGER.error("poll instances err", e);
+                LOGGER.error("pull instances err", e);
             }
         }, 10, 10, TimeUnit.SECONDS);
     }
 
-    private void pollLoadNewService() {
+    private void loadNewService() {
         int page = 1;
-        while (true) {
-            try {
+
+        try {
+            while (true) {
                 ListView<String> servicesOfServer = namingService.getServicesOfServer(page, PAGE_SIZE);
-                if (servicesOfServer.getCount() == 0) {
+                if (servicesOfServer.getCount() == 0 || servicesOfServer.getCount() < PAGE_SIZE) {
                     break;
                 }
 
                 List<String> serviceNames = servicesOfServer.getData();
                 for (String serviceName : serviceNames) {
-                    //本机服务，不需要加载进行处理
-                    if (slfServiceNames.contains(serviceName)) {
-                        continue;
-                    }
-                    //服务已经初始化注册过了
-                    if (serviceInstances.containsKey(serviceName)) {
+                    //本机服务，不需要加载进行处理;服务已经初始化注册过了
+                    if (slfServiceNames.contains(serviceName) || serviceInstances.containsKey(serviceName)) {
                         continue;
                     }
 
@@ -115,17 +112,12 @@ public class RpcServiceLocator extends Observable implements Closeable {
                     });
                 }
 
-                if (servicesOfServer.getCount() < PAGE_SIZE) {
-                    break;
-                }
                 ++page;
-            } catch (Exception e) {
-                LOGGER.error("load cluster info err", e);
-                break;
             }
+        } catch (Exception e) {
+            LOGGER.error("load cluster info err", e);
         }
     }
-
 
     public static void main(String[] args) throws Exception {
         RpcClient rpcClient = RpcClusterFactory.getRpcClient("login", BalanceType.HASH, "userId_011");

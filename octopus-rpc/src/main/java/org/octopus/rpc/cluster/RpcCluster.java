@@ -23,23 +23,20 @@ public class RpcCluster implements Observer {
 
     private final String name;
 
-    private final RpcServiceLocator rpcServiceLocator;
-
     private final CopyOnWriteArrayList<RpcClient> rpcClients = new CopyOnWriteArrayList<>();
 
-    public RpcCluster(String name, RpcServiceLocator rpcServiceLocator) {
-        this.name = name;
-        this.rpcServiceLocator = rpcServiceLocator;
+    private List<Instance> lastInstances;
 
-        List<Instance> rpcInstances = this.rpcServiceLocator.getInstance(name);
+    public RpcCluster(String name, List<Instance> rpcInstances) {
+        this.name = name;
+        this.lastInstances = rpcInstances;
+
         if (rpcInstances != null && !rpcInstances.isEmpty()) {
             for (Instance instance : rpcInstances) {
                 LOGGER.info("add rpc client: {}\t{}", name, instance);
                 initRpcClient(instance);
             }
         }
-
-        rpcServiceLocator.addObserver(this);
     }
 
     private void initRpcClient(Instance instance) {
@@ -48,7 +45,15 @@ public class RpcCluster implements Observer {
         rpcClients.add(rpcClient);
     }
 
-    public RpcClient getRpcClient(BalanceType hash, String id) {
+    public RpcClient getRpcClient(BalanceType balanceType, String id) {
+        if (Objects.requireNonNull(balanceType) == BalanceType.HASH) {
+            return getHashRpcClient(id);
+        }
+        throw new IllegalArgumentException("unsupported balance type: " + balanceType);
+
+    }
+
+    private RpcClient getHashRpcClient(String id) {
         HashFunction hashFunction = Hashing.murmur3_128();
         HashCode hashCode = hashFunction.hashBytes(id.getBytes(StandardCharsets.UTF_8));
         int bucket = Hashing.consistentHash(hashCode, rpcClients.size());
@@ -67,12 +72,11 @@ public class RpcCluster implements Observer {
         }
 
         List<Instance> currInstances = namingEvent.getInstances();
-        List<Instance> lastInstances = rpcServiceLocator.getInstance(name);
 
         List<Instance> addInstances = currInstances.stream().filter(instance -> !lastInstances.contains(instance)).collect(Collectors.toList());
         if (!addInstances.isEmpty()) {
             addInstances.forEach(instance -> {
-                LOGGER.info("rpc runtime add instance: {}", instance);
+                LOGGER.info("rpc runtime add service instance: {}\t{}\t{}", name, instance.getIp(), instance.getPort());
                 EndPoint endPoint = EndPoint.of(instance.getIp(), instance.getPort());
                 RpcClient rpcClient = RpcClientManager.getRpcClient(endPoint);
                 rpcClients.add(rpcClient);
@@ -82,7 +86,7 @@ public class RpcCluster implements Observer {
         List<Instance> removeInstances = lastInstances.stream().filter(instance -> !currInstances.contains(instance)).collect(Collectors.toList());
         if (!removeInstances.isEmpty()) {
             removeInstances.forEach(instance -> {
-                LOGGER.info("rpc runtime remove instance: {}", instance);
+                LOGGER.info("rpc runtime remove service instance: {}\t{}\t{}", name, instance.getIp(),instance.getPort());
                 Optional<RpcClient> optionalRpcClient = rpcClients.stream().filter(e -> Objects.equals(e.getEndPoint(), EndPoint.of(instance.getIp(), instance.getPort()))).findFirst();
                 optionalRpcClient.ifPresent(e -> {
                             rpcClients.remove(e);
@@ -95,5 +99,7 @@ public class RpcCluster implements Observer {
                 );
             });
         }
+
+        lastInstances = currInstances;
     }
 }

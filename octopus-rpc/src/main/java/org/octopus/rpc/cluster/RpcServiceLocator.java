@@ -33,21 +33,6 @@ public class RpcServiceLocator extends Observable implements Closeable {
     private static final int PAGE_SIZE = 20;
     private ScheduledExecutorService service;
 
-    @Override
-    public void close() throws IOException {
-        if (service != null) {
-            service.shutdown();
-        }
-
-        if (namingService != null) {
-            try {
-                namingService.shutDown();
-            } catch (NacosException e) {
-                LOGGER.error("shutdown naming service err", e);
-            }
-        }
-    }
-
     public void connectCluster(String address) throws ClusterLoadException {
         try {
             namingService = NamingFactory.createNamingService(address);
@@ -61,61 +46,92 @@ public class RpcServiceLocator extends Observable implements Closeable {
             try {
                 namingService.registerInstance(serviceName, ip, port);
                 slfServiceNames.add(serviceName);
-                LOGGER.info("register service: {}\t{}\t{}", serviceName, ip, port);
+                LOGGER.info("register service: {}", serviceName);
             } catch (NacosException e) {
                 LOGGER.error("register service err", e);
             }
         }
     }
 
-    public void loadServices() {
-        LOGGER.info("start schedule load remote rpc serivce");
-        loadNewService();
-        service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(() -> {
-            try {
-                loadNewService();
-            } catch (Exception e) {
-                LOGGER.error("pull instances err", e);
-            }
-        }, 10, 10, TimeUnit.SECONDS);
+    public List<Instance> getInstance(String name) {
+        return serviceInstances.get(name);
     }
 
-    private void loadNewService() {
-        int page = 1;
+    /**
+     * 只加载全新的服务，以后服务的变更走namingService通知机制
+     */
+    public void loadServices() {
+        service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(() -> {
+            int page = 1;
 
-        try {
-            while (true) {
-                ListView<String> servicesOfServer = namingService.getServicesOfServer(page, PAGE_SIZE);
-                if (servicesOfServer.getCount() == 0 || servicesOfServer.getCount() < PAGE_SIZE) {
-                    break;
-                }
-
-                List<String> serviceNames = servicesOfServer.getData();
-                for (String serviceName : serviceNames) {
-                    //本机服务，不需要加载进行处理;服务已经初始化注册过了
-                    if (slfServiceNames.contains(serviceName) || serviceInstances.containsKey(serviceName)) {
-                        continue;
+            try {
+                ListView<String> servicesOfServer = null;
+                do {
+                    servicesOfServer = namingService.getServicesOfServer(page, PAGE_SIZE);
+                    if (servicesOfServer.getCount() == 0) {
+                        break;
                     }
 
-                    //注册服务， 注册服务的监听
-                    List<Instance> allInstances = namingService.getAllInstances(serviceName);
-                    serviceInstances.put(serviceName, allInstances);
-                    LOGGER.info("load serviceData serviceName: {}", serviceName);
-                    allInstances.forEach(instance -> LOGGER.info("serviceName: {}\t{}", instance.getIp(), instance.getPort()));
-                    //更新当前的实例列表
-                    namingService.subscribe(serviceName, e -> {
-                        NamingEvent namingEvent = (NamingEvent) e;
-                        LOGGER.info("subscribe serviceName: {}, event: {}", namingEvent.getServiceName(), namingEvent);
-                        serviceInstances.put(serviceName, namingEvent.getInstances());
-                        notifyObservers();
-                    });
-                }
+                    List<String> serviceNames = servicesOfServer.getData();
+                    loadInstances(serviceNames);
 
-                ++page;
+                    ++page;
+                } while (servicesOfServer.getCount() == PAGE_SIZE);
+            } catch (Exception e) {
+                LOGGER.error("load cluster info err", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("load cluster info err", e);
+
+        }, 0, 60, TimeUnit.SECONDS);
+    }
+
+    private void loadInstances(List<String> serviceNames) throws NacosException {
+        for (String serviceName : serviceNames) {
+            //本机服务，不需要加载进行处理;服务已经初始化注册过了
+            if (slfServiceNames.contains(serviceName) || serviceInstances.containsKey(serviceName)) {
+                continue;
+            }
+
+            //加载rpc节点信息
+            List<Instance> allInstances = namingService.getAllInstances(serviceName);
+            serviceInstances.put(serviceName, allInstances);
+            allInstances.forEach(instance -> LOGGER.info("load serviceData: {}\t{}\t{}", serviceName, instance.getIp(), instance.getPort()));
+
+            //增加服务订阅，实例变更通知RpcCluster
+            addServiceSubscribe(serviceName);
+        }
+    }
+
+    private void addServiceSubscribe(String serviceName) throws NacosException {
+        namingService.subscribe(serviceName, event -> {
+            try {
+                NamingEvent namingEvent = (NamingEvent) event;
+                LOGGER.info("receive changed serviceName: {}", namingEvent.getServiceName());
+                serviceInstances.put(serviceName, namingEvent.getInstances());
+
+                //异步通知观察者，因为nameService通知有有超时限制
+                CompletableFuture.runAsync(() -> {
+                    setChanged();
+                    notifyObservers(namingEvent);
+                });
+            } catch (Exception e) {
+                LOGGER.error("receive change serviceName: {} err", serviceName, e);
+            }
+        });
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (service != null) {
+            service.shutdown();
+        }
+
+        if (namingService != null) {
+            try {
+                namingService.shutDown();
+            } catch (NacosException e) {
+                LOGGER.error("shutdown naming service err", e);
+            }
         }
     }
 
@@ -134,9 +150,6 @@ public class RpcServiceLocator extends Observable implements Closeable {
 
     }
 
-    public List<Instance> getInstance(String name) {
-        return serviceInstances.get(name);
-    }
 
 
 }

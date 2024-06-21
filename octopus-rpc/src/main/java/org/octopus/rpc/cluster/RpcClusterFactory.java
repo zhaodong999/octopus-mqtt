@@ -17,8 +17,8 @@ public class RpcClusterFactory {
 
     private static RpcServiceLocator rpcServiceLocator;
 
-    public static void init(RpcServiceLocator _rpcServiceLocator){
-        rpcServiceLocator = _rpcServiceLocator;
+    public static void init(RpcServiceLocator initRpcServiceLocator){
+        rpcServiceLocator = initRpcServiceLocator;
     }
 
     public static RpcClient getRpcClient(String serviceName, BalanceType balanceType, String id) {
@@ -27,7 +27,8 @@ public class RpcClusterFactory {
             return rpcCluster.getRpcClient(balanceType, id);
         }
 
-        RpcCluster rpcCluster = new RpcCluster(serviceName, rpcServiceLocator);
+        RpcCluster rpcCluster = new RpcCluster(serviceName,rpcServiceLocator.getInstance(serviceName));
+        rpcServiceLocator.addObserver(rpcCluster);
         RPC_CLIENT_CLUSTERS.put(serviceName, rpcCluster);
         return rpcCluster.getRpcClient(balanceType, id);
     }

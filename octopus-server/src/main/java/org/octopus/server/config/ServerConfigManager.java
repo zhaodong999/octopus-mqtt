@@ -2,9 +2,9 @@ package org.octopus.server.config;
 
 import java.util.ResourceBundle;
 
-public class ConfigManager {
+public class ServerConfigManager {
 
-    private static ConfigManager instance;
+    private static ServerConfigManager instance;
 
     /* 配置文件名称 */
     private static final String CONF_FILE = "config";
@@ -19,13 +19,13 @@ public class ConfigManager {
 
     private final ResourceBundle configBundle;
 
-    private ConfigManager() {
+    private ServerConfigManager() {
         configBundle = ResourceBundle.getBundle(CONF_FILE);
     }
 
-    public static ConfigManager getInstance() {
+    public static ServerConfigManager getInstance() {
         if (instance == null) {
-            instance = new ConfigManager();
+            instance = new ServerConfigManager();
         }
 
         return instance;

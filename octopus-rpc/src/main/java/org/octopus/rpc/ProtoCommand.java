@@ -5,18 +5,18 @@ public enum ProtoCommand {
         /**
          * request,response 都是有payload
          */
-        Request(1),
+        REQUEST(1),
 
-        Response(2),
+        RESPONSE(2),
 
         /**
          * ping,pong 没有payload, 对应序列化，长度， requestId也没有
          */
-        Ping(3),
+        PING(3),
 
-        Pong(4),
+        PONG(4),
 
-        Unkown(0);
+        UNKOWN(0);
 
         private final int code;
 
@@ -35,6 +35,6 @@ public enum ProtoCommand {
                 }
             }
 
-            return Unkown;
+            return UNKOWN;
         }
     }

@@ -31,7 +31,7 @@ public class RpcDecoder extends ReplayingDecoder<RpcDecoder.DecoderState> {
                 ProtoCommand protoCommand = ProtoCommand.of(command & 0x0F);
                 fixedHeader.setProtoCommand(protoCommand);
 
-                if (protoCommand == ProtoCommand.Ping || protoCommand == ProtoCommand.Pong) {
+                if (protoCommand == ProtoCommand.PING || protoCommand == ProtoCommand.PONG) {
                     RpcMsg rpcMsg = new RpcMsg(protoCommand);
                     checkpoint(DecoderState.READ_MAGIC);
                     out.add(rpcMsg);

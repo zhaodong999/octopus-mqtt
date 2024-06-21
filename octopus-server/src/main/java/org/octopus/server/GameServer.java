@@ -5,7 +5,7 @@ import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.cluster.RpcServiceLocator;
 import org.octopus.rpc.server.RpcServer;
 import org.octopus.rpc.service.RpcProxyManager;
-import org.octopus.server.config.ConfigManager;
+import org.octopus.server.config.ServerConfigManager;
 import org.octopus.server.service.ServiceOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,11 @@ public class GameServer {
         rpcProxyManager.register(new ServiceOne());
 
         RpcServiceLocator rpcServiceLocator = new RpcServiceLocator();
-        rpcServiceLocator.connectCluster(ConfigManager.getInstance().getServiceRegistrationAddr());
+        rpcServiceLocator.connectCluster(ServerConfigManager.getInstance().getServiceRegistrationAddr());
 
         RpcClusterFactory.init(rpcServiceLocator);
         //启动rpc 监听端口，
-        RpcServer rpcServer = new RpcServer(ConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
+        RpcServer rpcServer = new RpcServer(ServerConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
         try {
             rpcServer.start();
         } catch (InterruptedException e) {

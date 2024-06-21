@@ -2,8 +2,8 @@ package org.octopus.rpc;
 
 public enum SerializeType {
 
-        Unknown(0),
-        Proto(1);
+        UNKNOWN(0),
+        PROTO(1);
 
         private final int code;
 
@@ -22,6 +22,6 @@ public enum SerializeType {
             }
         }
 
-        return Unknown;
+        return UNKNOWN;
     }
 }

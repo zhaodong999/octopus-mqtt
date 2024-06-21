@@ -28,12 +28,12 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcMsg msg) throws Exception {
-        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.Ping) {
+        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.PING) {
             ctx.writeAndFlush(RpcMsg.PONG);
             return;
         }
 
-        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.Request) {
+        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.REQUEST) {
             byte[] payLoad = msg.getPayLoad();
             Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.parseFrom(payLoad);
             Any[] params = new Any[rpcRequest.getArgsCount()];
@@ -51,8 +51,8 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
                 builder.setResult(any);
                 builder.build();
 
-                RpcMsg rpcMsg = new RpcMsg(ProtoCommand.Response);
-                VariableHeader variableHeader = new VariableHeader(msg.getVariableHeader().getTrackerId(), SerializeType.Proto);
+                RpcMsg rpcMsg = new RpcMsg(ProtoCommand.RESPONSE);
+                VariableHeader variableHeader = new VariableHeader(msg.getVariableHeader().getTrackerId(), SerializeType.PROTO);
                 rpcMsg.setVariableHeader(variableHeader);
                 rpcMsg.setPayLoad(builder.build().toByteArray());
 

@@ -53,7 +53,7 @@ public class RpcConnection implements Closeable {
         ChannelFuture channelFuture = bootstrap.connect(endPoint.getHost(), endPoint.getPort()).sync();
         channelFuture.addListener((ChannelFutureListener) f -> {
             if (f.isSuccess()) {
-                LOGGER.info("rpc client connect over: {}", endPoint);
+                LOGGER.info("rpc client connect over: {}:{}", endPoint.getHost(), endPoint.getPort());
                 channel = f.channel();
                 addCloseListener();
             } else {
@@ -78,9 +78,9 @@ public class RpcConnection implements Closeable {
             throw new RpcClientException();
         }
 
-        RpcMsg rpcMsg = new RpcMsg(ProtoCommand.Request);
+        RpcMsg rpcMsg = new RpcMsg(ProtoCommand.REQUEST);
         long id = IdUtils.getUniqueIdBySnakeflow();
-        VariableHeader variableHeader = new VariableHeader(id, SerializeType.Proto);
+        VariableHeader variableHeader = new VariableHeader(id, SerializeType.PROTO);
         rpcMsg.setVariableHeader(variableHeader);
         rpcMsg.setPayLoad(rpcRequest.toByteArray());
 
@@ -99,9 +99,9 @@ public class RpcConnection implements Closeable {
     }
 
     public void sendNoResponse(Rpc.RpcRequest rpcRequest) {
-        RpcMsg rpcMsg = new RpcMsg(ProtoCommand.Request);
+        RpcMsg rpcMsg = new RpcMsg(ProtoCommand.REQUEST);
         long id = IdUtils.getUniqueIdBySnakeflow();
-        VariableHeader variableHeader = new VariableHeader(id, SerializeType.Proto);
+        VariableHeader variableHeader = new VariableHeader(id, SerializeType.PROTO);
         rpcMsg.setVariableHeader(variableHeader);
         rpcMsg.setPayLoad(rpcRequest.toByteArray());
 

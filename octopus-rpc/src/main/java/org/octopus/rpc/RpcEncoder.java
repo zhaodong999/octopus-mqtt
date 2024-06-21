@@ -12,12 +12,12 @@ public class RpcEncoder extends MessageToMessageEncoder<RpcMsg> {
     protected void encode(ChannelHandlerContext ctx, RpcMsg msg, List<Object> out) throws Exception {
         FixedHeader fixedHeader = msg.getFixedHeader();
         ProtoCommand protoCommand = fixedHeader.getProtoCommand();
-        if (protoCommand == ProtoCommand.Pong || protoCommand == ProtoCommand.Ping) {
+        if (protoCommand == ProtoCommand.PONG || protoCommand == ProtoCommand.PING) {
             ByteBuf buffer = ctx.alloc().buffer(3);
             int header = fixedHeader.getVersion() << 4 | fixedHeader.getProtoCommand().getCode();
             buffer.writeShort(fixedHeader.getMagic()).writeByte(header);
             out.add(buffer);
-        } else if (protoCommand == ProtoCommand.Request || protoCommand == ProtoCommand.Response) {
+        } else if (protoCommand == ProtoCommand.REQUEST || protoCommand == ProtoCommand.RESPONSE) {
             ByteBuf buffer = ctx.alloc().buffer(6 + msg.getPayLoad().length + 8);
 
             int header = fixedHeader.getVersion() << 4 | fixedHeader.getProtoCommand().getCode();

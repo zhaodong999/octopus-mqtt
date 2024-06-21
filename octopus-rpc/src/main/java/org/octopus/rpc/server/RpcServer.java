@@ -78,8 +78,8 @@ public class RpcServer implements Closeable{
     }
 
     private void publishService() {
-        rpcServiceLocator.loadServices();
         rpcServiceLocator.registerInstance(rpcProxyManager.getServiceNames(), IpUtils.getIp(), port);
+        rpcServiceLocator.loadServices();
         LOGGER.info("publish service complete");
     }
 

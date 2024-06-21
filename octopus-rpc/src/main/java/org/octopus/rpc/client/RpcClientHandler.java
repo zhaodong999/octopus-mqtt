@@ -20,12 +20,12 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcMsg msg) throws Exception {
-        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.Pong) {
+        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.PONG) {
             LOGGER.info("rpc receive pong");
             return;
         }
 
-        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.Response) {
+        if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.RESPONSE) {
             VariableHeader variableHeader = msg.getVariableHeader();
             long trackId = variableHeader.getTrackerId();
             LOGGER.info("receive msg trackId : {}", trackId);
@@ -35,7 +35,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
                 return;
             }
 
-            if (variableHeader.getSerializeType() != SerializeType.Proto) {
+            if (variableHeader.getSerializeType() != SerializeType.PROTO) {
                 callBack.completeExceptionally(new Throwable());
             }
 

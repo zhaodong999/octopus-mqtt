@@ -1,7 +1,7 @@
 package org.octopus.gateway;
 
 
-import org.octopus.gateway.config.ConfigManager;
+import org.octopus.gateway.config.GatewayConfigManager;
 import org.octopus.gateway.server.MqttServer;
 import org.octopus.gateway.service.SendService;
 import org.octopus.rpc.cluster.RpcClusterFactory;
@@ -23,10 +23,10 @@ public class GateWayServer {
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new SendService());
 
-        String addr = ConfigManager.getInstance().getServiceRegistrationAddr();
+        String addr = GatewayConfigManager.getInstance().getServiceRegistrationAddr();
         try (RpcServiceLocator rpcServiceLocator = new RpcServiceLocator();
-             RpcServer rpcServer = new RpcServer(ConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
-             MqttServer mqttServer = new MqttServer(ConfigManager.getInstance().getMqttPort())) {
+             RpcServer rpcServer = new RpcServer(GatewayConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
+             MqttServer mqttServer = new MqttServer(GatewayConfigManager.getInstance().getMqttPort())) {
 
             // 连接集群
             rpcServiceLocator.connectCluster(addr);

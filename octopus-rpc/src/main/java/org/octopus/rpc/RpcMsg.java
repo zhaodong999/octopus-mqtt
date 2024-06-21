@@ -12,9 +12,9 @@ public class RpcMsg {
 
     private byte[] payLoad;
 
-    public static final RpcMsg PING = new RpcMsg(ProtoCommand.Ping);
+    public static final RpcMsg PING = new RpcMsg(ProtoCommand.PING);
 
-    public static final RpcMsg PONG = new RpcMsg(ProtoCommand.Pong);
+    public static final RpcMsg PONG = new RpcMsg(ProtoCommand.PONG);
 
     public RpcMsg(ProtoCommand protoCommand) {
         this.fixedHeader = new FixedHeader(MAGIC, VERSION, protoCommand);

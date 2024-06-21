@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 
-public class RpcServer implements Closeable {
+public class RpcServer implements Closeable{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
 
@@ -60,14 +60,13 @@ public class RpcServer implements Closeable {
         ChannelFuture channelFuture = bootstrap.bind(port).sync();
         channelFuture.addListener(f -> {
             if (f.isSuccess()) {
-                LOGGER.info("rpc server start, bind port: {}", port);
                 publishService();
+                LOGGER.info("rpc server start complete, bind port: {}", port);
             }
         });
 
     }
 
-    @Override
     public void close() throws IOException {
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();

@@ -7,7 +7,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.octopus.rpc.EndPoint;
-import org.octopus.rpc.exception.SharkRpcClientException;
+import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.proto.rpc.Rpc;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ class RpcClientTest {
     }
 
     @Test
-    void invokeTest() throws SharkRpcClientException, IOException, ExecutionException, InterruptedException {
+    void invokeTest() throws RpcClientException, IOException, ExecutionException, InterruptedException {
         //建立连接
         RpcClient rpcClient = new RpcClient(EndPoint.of("localhost", 8880), nioEventLoopGroup);
 

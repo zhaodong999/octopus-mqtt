@@ -5,11 +5,13 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import org.apache.commons.io.IOUtils;
 import org.octopus.rpc.EndPoint;
 import org.octopus.rpc.client.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -78,11 +80,19 @@ public class RpcCluster implements Observer {
         }
 
         List<Instance> removeInstances = lastInstances.stream().filter(instance -> !currInstances.contains(instance)).collect(Collectors.toList());
-        if(!removeInstances.isEmpty()){
-            removeInstances.forEach(instance ->{
+        if (!removeInstances.isEmpty()) {
+            removeInstances.forEach(instance -> {
                 LOGGER.info("rpc runtime remove instance: {}", instance);
                 Optional<RpcClient> optionalRpcClient = rpcClients.stream().filter(e -> Objects.equals(e.getEndPoint(), EndPoint.of(instance.getIp(), instance.getPort()))).findFirst();
-                optionalRpcClient.ifPresent(rpcClients::remove);
+                optionalRpcClient.ifPresent(e -> {
+                            rpcClients.remove(e);
+                            try {
+                                IOUtils.close(e);
+                            } catch (IOException ex) {
+                                LOGGER.error("close rpc client error", ex);
+                            }
+                        }
+                );
             });
         }
     }

@@ -207,7 +207,7 @@ public class RpcProxyManager {
             sb.append("}\n");
         }
 
-        LOGGER.info("generate method: {} body: {}", method.getName(), sb);
+        LOGGER.debug("generate method: {} body: {}", method.getName(), sb);
         return sb.toString();
     }
 

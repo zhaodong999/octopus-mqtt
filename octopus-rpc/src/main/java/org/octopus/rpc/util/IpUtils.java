@@ -23,7 +23,6 @@ public class IpUtils {
                     if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
                             && inetAddress.isSiteLocalAddress()) {
                         String ipAddress = inetAddress.getHostAddress();
-                        LOGGER.info("本机IP地址：{}", ipAddress);
                         return ipAddress;
                     }
                 }

@@ -4,14 +4,22 @@ import java.util.ResourceBundle;
 
 public class ConfigManager {
 
+    /* 配置文件名称 */
+    private static final String CONF_FILE = "config";
     private final ResourceBundle configBundle = ResourceBundle.getBundle(CONF_FILE);
 
     private ConfigManager() {
     }
-    private static final  ConfigManager INSTANCE = new ConfigManager();
 
-    /* 配置文件名称 */
-    private static final String CONF_FILE = "config";
+    private static class ConfigManagerHolder {
+       private static final ConfigManager INSTANCE = new ConfigManager();
+    }
+
+    public static ConfigManager getInstance() {
+        return ConfigManagerHolder.INSTANCE;
+    }
+
+
 
     /* zookeeper 连接串*/
     private static final String SERVICE_REGISTRATION_ADDRESS = "service.registration.address";
@@ -21,11 +29,6 @@ public class ConfigManager {
 
     private static final String MQTT_PORT = "mqtt.port";
 
-
-
-    public static ConfigManager getInstance() {
-        return INSTANCE;
-    }
 
     public String getServiceRegistrationAddr() {
         return configBundle.getString(SERVICE_REGISTRATION_ADDRESS);

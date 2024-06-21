@@ -39,8 +39,11 @@ public class GatewayHandler extends ChannelInboundHandlerAdapter {
             case PINGREQ:
                 GatewayProcessor.PING.handle(ctx, message);
                 break;
+            case DISCONNECT:
+                GatewayProcessor.DISCONNECT.handle(ctx, message);
+                break;
             default:
-                LOGGER.error("mqtt msg err");
+                GatewayProcessor.UNKNOWN.handle(ctx, message);
                 break;
         }
     }

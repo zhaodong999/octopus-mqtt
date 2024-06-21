@@ -31,30 +31,21 @@ public class MqttServer implements Closeable {
         workerGroup = new NioEventLoopGroup();
     }
 
-    public void start() {
-        try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new MqttDecoder());
-                    ch.pipeline().addLast(MqttEncoder.INSTANCE);
-                    ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
-                    ch.pipeline().addLast(GatewayHandler.INSTANCE);
-                }
-            });
+    public void start() throws InterruptedException {
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast(new MqttDecoder());
+                ch.pipeline().addLast(MqttEncoder.INSTANCE);
+                ch.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+                ch.pipeline().addLast(GatewayHandler.INSTANCE);
+            }
+        });
 
-            Channel channel = bootstrap.bind(port).sync().channel();
-            LOGGER.info("start gateway with port: {}", port);
-            channel.closeFuture().sync();
-        } catch (InterruptedException e) {
-            LOGGER.error("mqtt server start err", e);
-            throw new RuntimeException(e);
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
-
+        Channel channel = bootstrap.bind(port).sync().channel();
+        LOGGER.info("start gateway with port: {}", port);
+        channel.closeFuture().sync();
     }
 
     @Override

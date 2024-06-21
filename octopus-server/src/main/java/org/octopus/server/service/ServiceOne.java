@@ -7,7 +7,7 @@ import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.client.RpcClient;
 import org.octopus.rpc.cluster.BalanceType;
 import org.octopus.rpc.cluster.RpcClusterFactory;
-import org.octopus.rpc.exception.SharkRpcClientException;
+import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.rpc.server.anno.RpcMethod;
 import org.octopus.rpc.server.anno.RpcService;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class ServiceOne {
         Rpc.RpcRequest rpcRequest = requesBuilder.setService("gate").setMethod("publish").addArgs(Any.pack(builder.build())).build();
         try {
             rpcClient.callOneway(rpcRequest);
-        } catch (SharkRpcClientException e) {
+        } catch (RpcClientException e) {
             LOGGER.info("test invoke rpc err", e);
         }
     }

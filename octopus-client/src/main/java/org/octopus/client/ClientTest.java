@@ -10,7 +10,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.octopus.proto.rpc.Rpc;
 
 
-public class ClientTest {
+public class  ClientTest {
 
     public static void main(String[] args) throws InterruptedException {
         ClientTest clientTest = new ClientTest();

@@ -2,7 +2,7 @@ package org.octopus.rpc.client;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.octopus.rpc.EndPoint;
-import org.octopus.rpc.exception.SharkRpcClientException;
+import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.proto.rpc.Rpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +44,9 @@ public class RpcClient implements Closeable {
         }
     }
 
-    public CompletableFuture<Rpc.RpcResponse> call(Rpc.RpcRequest request) throws SharkRpcClientException {
+    public CompletableFuture<Rpc.RpcResponse> call(Rpc.RpcRequest request) throws RpcClientException {
         if (!rpcConnection.available()) {
-            throw new SharkRpcClientException();
+            throw new RpcClientException();
         }
         CompletableFuture<Rpc.RpcResponse> callBack = new CompletableFuture<>();
         rpcConnection.send(request, callBack);
@@ -57,9 +57,9 @@ public class RpcClient implements Closeable {
         return endPoint;
     }
 
-    public void callOneway(Rpc.RpcRequest request) throws SharkRpcClientException {
+    public void callOneway(Rpc.RpcRequest request) throws RpcClientException {
         if (!rpcConnection.available()) {
-            throw new SharkRpcClientException();
+            throw new RpcClientException();
         }
 
         rpcConnection.sendNoResponse(request);

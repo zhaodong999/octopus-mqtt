@@ -8,7 +8,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.octopus.rpc.*;
 import org.octopus.rpc.cluster.RpcClientManager;
-import org.octopus.rpc.exception.SharkRpcClientException;
+import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.util.IdUtils;
 import org.slf4j.Logger;
@@ -73,9 +73,9 @@ public class RpcConnection implements Closeable {
         }
     }
 
-    public void send(Rpc.RpcRequest rpcRequest, CompletableFuture<Rpc.RpcResponse> callBack) throws SharkRpcClientException {
+    public void send(Rpc.RpcRequest rpcRequest, CompletableFuture<Rpc.RpcResponse> callBack) throws RpcClientException {
         if (channel == null || !channel.isWritable()) {
-            throw new SharkRpcClientException();
+            throw new RpcClientException();
         }
 
         RpcMsg rpcMsg = new RpcMsg(ProtoCommand.Request);

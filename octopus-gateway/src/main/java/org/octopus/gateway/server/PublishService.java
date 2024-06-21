@@ -4,7 +4,7 @@ import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.client.RpcClient;
 import org.octopus.rpc.cluster.BalanceType;
 import org.octopus.rpc.cluster.RpcClusterFactory;
-import org.octopus.rpc.exception.SharkRpcClientException;
+import org.octopus.rpc.exception.RpcClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class PublishService {
         try {
             RpcClient rpcClient = RpcClusterFactory.getRpcClient(serviceName, BalanceType.HASH, id);
             rpcClient.callOneway(request);
-        } catch (SharkRpcClientException e) {
+        } catch (RpcClientException e) {
             LOGGER.error("rpc client send msg err", e);
         }
     }

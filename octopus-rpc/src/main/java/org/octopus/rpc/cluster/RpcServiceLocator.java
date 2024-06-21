@@ -8,8 +8,9 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.ListView;
 import com.google.protobuf.Any;
 import com.google.protobuf.StringValue;
-import org.octopus.rpc.client.RpcClient;
 import org.octopus.proto.rpc.Rpc;
+import org.octopus.rpc.client.RpcClient;
+import org.octopus.rpc.exception.ClusterLoadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +35,22 @@ public class RpcServiceLocator extends Observable implements Closeable {
         if (service != null) {
             service.shutdown();
         }
+
+        if (namingService != null) {
+            try {
+                namingService.shutDown();
+            } catch (NacosException e) {
+                LOGGER.error("shutdown naming service err", e);
+            }
+        }
     }
 
-    public void connectCluster(String address) throws NacosException {
-        namingService = NamingFactory.createNamingService(address);
+    public void connectCluster(String address) throws ClusterLoadException {
+        try {
+            namingService = NamingFactory.createNamingService(address);
+        }catch (NacosException e){
+            throw new ClusterLoadException(e);
+        }
     }
 
     public void registerInstance(Set<String> serviceNames, String ip, int port) {
@@ -83,8 +96,8 @@ public class RpcServiceLocator extends Observable implements Closeable {
                     //注册服务， 注册服务的监听
                     List<Instance> allInstances = namingService.getAllInstances(serviceName);
                     serviceInstances.put(serviceName, allInstances);
-                    LOGGER.info("load serviceData : {}/{}", serviceName, allInstances);
-
+                    LOGGER.info("load serviceData serviceName: {}", serviceName);
+                    allInstances.forEach(instance -> LOGGER.info("serviceName: {}\t{}", instance.getIp(), instance.getPort()));
                     //更新当前的实例列表
                     namingService.subscribe(serviceName, e -> {
                         NamingEvent namingEvent = (NamingEvent) e;

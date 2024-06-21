@@ -87,6 +87,7 @@ public enum GatewayProcessor {
                     ctx.writeAndFlush(pubAckMsg);
                     break;
                 case EXACTLY_ONCE:
+                    //TODO 暂时不支持
                     PublishService.handleOne(request, clientId);
 
                     MqttFixedHeader rceFixedHeader =
@@ -115,7 +116,7 @@ public enum GatewayProcessor {
             MqttSubscribeMessage mqttSubscribeMessage = (MqttSubscribeMessage) mqttMessage;
             LOGGER.info("subMsg: {}", mqttSubscribeMessage);
 
-            Map<String, MqttSubscriptionOption> topics= mqttSubscribeMessage.payload().topicSubscriptions().stream().filter(entity-> entity.topicFilter()!=null).collect(Collectors.toMap(MqttTopicSubscription::topicFilter, MqttTopicSubscription::option));
+            Map<String, MqttSubscriptionOption> topics = mqttSubscribeMessage.payload().topicSubscriptions().stream().filter(entity -> entity.topicFilter() != null).collect(Collectors.toMap(MqttTopicSubscription::topicFilter, MqttTopicSubscription::option));
             ctx.channel().attr(AttrKey.TOPICS).get().putAll(topics);
             MqttFixedHeader subFixedHeader =
                     new MqttFixedHeader(MqttMessageType.SUBACK, false, MqttQoS.AT_MOST_ONCE, false, 0);
@@ -127,8 +128,24 @@ public enum GatewayProcessor {
     PING {
         @Override
         public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+            LOGGER.info("mqtt ping msg: {}", mqttMessage);
+            ctx.writeAndFlush(MqttMessage.PINGRESP);
+        }
 
+    },
 
+    DISCONNECT {
+        @Override
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+            LOGGER.info("mqtt disconnect msg: {}", mqttMessage);
+            ctx.close();
+        }
+    },
+
+    UNKNOWN {
+        @Override
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+            LOGGER.info("mqtt unknown msg: {}", mqttMessage);
         }
     };
 

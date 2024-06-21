@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Set;
@@ -26,6 +27,8 @@ public class RpcServiceLocator extends Observable implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceLocator.class);
     private final ConcurrentMap<String, List<Instance>> serviceInstances = new ConcurrentHashMap<>();
+
+    private final List<String> slfServiceNames = new ArrayList<>();
     private NamingService namingService;
     private static final int PAGE_SIZE = 20;
     private ScheduledExecutorService service;
@@ -48,7 +51,7 @@ public class RpcServiceLocator extends Observable implements Closeable {
     public void connectCluster(String address) throws ClusterLoadException {
         try {
             namingService = NamingFactory.createNamingService(address);
-        }catch (NacosException e){
+        } catch (NacosException e) {
             throw new ClusterLoadException(e);
         }
     }
@@ -57,6 +60,7 @@ public class RpcServiceLocator extends Observable implements Closeable {
         for (String serviceName : serviceNames) {
             try {
                 namingService.registerInstance(serviceName, ip, port);
+                slfServiceNames.add(serviceName);
                 LOGGER.info("register service: {}\t{}\t{}", serviceName, ip, port);
             } catch (NacosException e) {
                 LOGGER.error("register service err", e);
@@ -88,6 +92,10 @@ public class RpcServiceLocator extends Observable implements Closeable {
 
                 List<String> serviceNames = servicesOfServer.getData();
                 for (String serviceName : serviceNames) {
+                    //本机服务，不需要加载进行处理
+                    if (slfServiceNames.contains(serviceName)) {
+                        continue;
+                    }
                     //服务已经初始化注册过了
                     if (serviceInstances.containsKey(serviceName)) {
                         continue;

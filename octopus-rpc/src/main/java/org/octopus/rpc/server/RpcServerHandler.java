@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RpcServerHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcServerHandler.class);
 
     private final RpcProxyManager rpcServiceManager;
 
@@ -41,7 +41,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
             LOGGER.info("receive packet: {}/{}", rpcRequest.getService(), rpcRequest.getMethod());
             CompletableFuture<Any> completableFuture = rpcServiceManager.invoke(rpcRequest.getService(), rpcRequest.getMethod(), params);
-            if(completableFuture == null){
+            if (completableFuture == null) {
                 return;
             }
             completableFuture.thenAccept(any -> {

@@ -10,7 +10,10 @@ import java.util.Enumeration;
 
 public class IpUtils {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(IpUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IpUtils.class);
+
+    private IpUtils() {
+    }
 
     public static String getIp() {
         try {
@@ -22,8 +25,7 @@ public class IpUtils {
                     InetAddress inetAddress = inetAddresses.nextElement();
                     if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
                             && inetAddress.isSiteLocalAddress()) {
-                        String ipAddress = inetAddress.getHostAddress();
-                        return ipAddress;
+                        return inetAddress.getHostAddress();
                     }
                 }
             }

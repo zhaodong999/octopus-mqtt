@@ -5,12 +5,15 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 多终端用户情况下，暂时还没有处理
+ */
 public class ConnectionManager {
 
     private ConnectionManager() {
     }
 
-    public static final ConcurrentMap<String, ChannelHandlerContext> CLIENT_CONNECTIONS = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, ChannelHandlerContext> CLIENT_CONNECTIONS = new ConcurrentHashMap<>();
 
     /**
      * TODO 终端，多终端，踢出上一个无效连接

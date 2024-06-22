@@ -1,6 +1,5 @@
 package org.octopus.server;
 
-import com.alibaba.nacos.api.exception.NacosException;
 import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.cluster.RpcServiceLocator;
 import org.octopus.rpc.server.RpcServer;
@@ -10,11 +9,13 @@ import org.octopus.server.service.ServiceOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class GameServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
 
-    public void start() throws NacosException {
+    public void start() {
         //注册服务
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new ServiceOne());
@@ -22,31 +23,28 @@ public class GameServer {
         RpcServiceLocator rpcServiceLocator = new RpcServiceLocator();
         rpcServiceLocator.connectCluster(ServerConfigManager.getInstance().getServiceRegistrationAddr());
 
+        //初始化集群
         RpcClusterFactory.init(rpcServiceLocator);
-        //启动rpc 监听端口，
-        RpcServer rpcServer = new RpcServer(ServerConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
-        try {
-            rpcServer.start();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                rpcServer.close();
-            } catch (Exception e) {
-                LOGGER.error("server close err", e);
-            }
-        }));
+        //启动rpc 监听端口，
+        try (RpcServer rpcServer = new RpcServer(ServerConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator)) {
+            rpcServer.start();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    rpcServer.close();
+                } catch (Exception e) {
+                    LOGGER.error("server close err", e);
+                }
+            }));
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("server start err", e);
+            Thread.currentThread().interrupt();
+        }
     }
 
     public static void main(String[] args) {
         GameServer gameServer = new GameServer();
-        try {
-            gameServer.start();
-        } catch (NacosException e) {
-            LOGGER.error("server start err", e);
-            System.exit(0);
-        }
+        gameServer.start();
     }
 }

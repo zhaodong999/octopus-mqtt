@@ -59,7 +59,7 @@ public class RpcConnection implements Closeable {
             } else {
                 LOGGER.error("rpc client connect err", f.cause());
                 channel = null;
-                //TODO 2,4,8,16,32,大于一分钟要重新从2开始
+                //2,4,8,16,32,大于一分钟要重新从2开始
                 period = period > 60 ? 2 : (long) Math.pow(period, 2);
                 Thread.sleep(period * 1000);
                 connect();

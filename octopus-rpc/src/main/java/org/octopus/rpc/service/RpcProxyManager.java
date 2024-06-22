@@ -41,13 +41,13 @@ public class RpcProxyManager {
 
     public CompletableFuture<Any> invoke(String serviceName, String method, Any... params) {
         ServiceId serviceId = new ServiceId(serviceName, method);
-        if(proxyMethods.containsKey(serviceId)){
+        if (proxyMethods.containsKey(serviceId)) {
             ProxyWrapper proxyWrapper = proxyMethods.get(serviceId);
             return CompletableFuture.supplyAsync(() -> {
                 LOGGER.info("invoke proxy: {}\t{}\t", serviceId.serviceName, serviceId.methodName);
                 return proxyWrapper.executor(params);
             });
-        }else{
+        } else {
             CompletableFuture.runAsync(() -> {
                 ProxyOneWrapper proxyOneWrapper = proxyOneMethods.get(serviceId);
                 proxyOneWrapper.executor(params);
@@ -75,62 +75,44 @@ public class RpcProxyManager {
             }
 
             ServiceId serviceId = new ServiceId(rpcServiceAnno.name(), rpcMethodAnno.name());
-            try {
-                if (void.class == method.getReturnType()) {
-                    generateOnewayProxy(method, serviceId, serviceClass, serviceInstance);
-                } else {
-                    generateProxy(method, serviceId, serviceClass, serviceInstance);
-                }
-            } catch (CannotCompileException | NoSuchMethodException | InvocationTargetException |
-                     InstantiationException | IllegalAccessException e) {
-                LOGGER.error("generate proxy class err", e);
-                throw new GenerateClassException(e);
+
+            if (void.class == method.getReturnType()) {
+                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.HAS_RESULT);
+            } else {
+                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.VOID);
             }
         }
     }
 
-    private void generateProxy(Method method, ServiceId serviceId, Class<?> serviceClass, Object serviceInstance) throws CannotCompileException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private void generateProxy(Method method, ServiceId serviceId, Class<?> serviceClass, Object serviceInstance, ProxyType proxyType) {
         CtClass ctClass;
         try {
-            ctClass = generateClass(serviceId, serviceClass, method, ProxyType.HAS_RESULT);
+            ctClass = generateClass(serviceId, serviceClass, method, proxyType);
         } catch (NotFoundException | CannotCompileException e) {
-            LOGGER.error("generate proxy class err", e);
-            throw new GenerateClassException(e);
+            throw new GenerateClassException("generate service proxy class err");
         }
 
         try {
             ctClass.writeFile("/Users/zhaodong");
         } catch (CannotCompileException | IOException e) {
-            throw new GenerateClassException(e);
-        }
-
-
-        Class<?> proxyClass = ctClass.toClass();
-        Constructor<?> declaredConstructor = proxyClass.getDeclaredConstructor(serviceClass);
-        ProxyWrapper proxyInstance = (ProxyWrapper) declaredConstructor.newInstance(serviceInstance);
-        proxyMethods.put(serviceId, proxyInstance);
-    }
-
-    private void generateOnewayProxy(Method method, ServiceId serviceId, Class<?> serviceClass, Object serviceInstance) throws CannotCompileException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        CtClass ctClass;
-        try {
-            ctClass = generateClass(serviceId, serviceClass, method, ProxyType.VOID);
-        } catch (NotFoundException | CannotCompileException e) {
-            LOGGER.error("generate proxy class err", e);
-            throw new GenerateClassException(e);
+            throw new GenerateClassException("write service proxy class err");
         }
 
         try {
-            ctClass.writeFile("/Users/zhaodong");
-        } catch (CannotCompileException | IOException e) {
-            throw new GenerateClassException(e);
+            Class<?> proxyClass = ctClass.toClass();
+            Constructor<?> declaredConstructor = proxyClass.getDeclaredConstructor(serviceClass);
+            if (proxyType == ProxyType.VOID) {
+                ProxyOneWrapper proxyOneInstance = (ProxyOneWrapper) declaredConstructor.newInstance(serviceInstance);
+                proxyOneMethods.put(serviceId, proxyOneInstance);
+            } else if (proxyType == ProxyType.HAS_RESULT) {
+                ProxyWrapper proxyInstance = (ProxyWrapper) declaredConstructor.newInstance(serviceInstance);
+                proxyMethods.put(serviceId, proxyInstance);
+            }
+
+        } catch (CannotCompileException | InvocationTargetException | NoSuchMethodException | InstantiationException |
+                 IllegalAccessException e) {
+            throw new GenerateClassException("init service proxy instance err");
         }
-
-
-        Class<?> proxyClass = ctClass.toClass();
-        Constructor<?> declaredConstructor = proxyClass.getDeclaredConstructor(serviceClass);
-        ProxyOneWrapper proxyOneInstance = (ProxyOneWrapper) declaredConstructor.newInstance(serviceInstance);
-        proxyOneMethods.put(serviceId, proxyOneInstance);
     }
 
     private CtClass generateClass(ServiceId serviceId, Class<?> serviceClass, Method method, ProxyType proxyType) throws NotFoundException, CannotCompileException {
@@ -161,15 +143,35 @@ public class RpcProxyManager {
         }
         ctMethod.setModifiers(Modifier.PUBLIC | Modifier.VARARGS);
         subClass.addMethod(ctMethod);
-        ctMethod.setBody(generateBody(method));
+        ctMethod.setBody(generateMethodBody(method, proxyType));
         return subClass;
     }
 
-    private String generateBody(Method method) {
+    private String generateMethodBody(Method method, ProxyType proxyType) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n{\n");
 
         //generate param
+        generateMethodParam(method, sb);
+
+        //invoke method
+        generateMethodInvoke(method, sb, proxyType);
+
+        //generate return
+        if (proxyType == ProxyType.VOID) {
+            sb.append(");\n");
+        } else if (proxyType == ProxyType.HAS_RESULT) {
+            sb.append("return com.google.protobuf.Any.pack(value);\n");
+        }
+
+        //generate end
+        sb.append("}\n");
+
+        LOGGER.debug("generate method: {} body: {}", method.getName(), sb);
+        return sb.toString();
+    }
+
+    private void generateMethodParam(Method method, StringBuilder sb) {
         int index = 0;
         for (Class<?> parameterClass : method.getParameterTypes()) {
             if (parameterClass.isPrimitive() || parameterClass == String.class) {
@@ -179,9 +181,10 @@ public class RpcProxyManager {
             }
             ++index;
         }
+    }
 
-        //invoke method
-        if (method.getReturnType() == void.class) {
+    private void generateMethodInvoke(Method method, StringBuilder sb, ProxyType proxyType) {
+        if (proxyType == ProxyType.VOID) {
             sb.append("serviceInstance.").append(method.getName()).append("(");
             for (int i = 0; i < method.getParameterTypes().length; i++) {
                 if (method.getParameterTypes()[i].isPrimitive() || method.getParameterTypes()[i] == String.class) {
@@ -191,9 +194,7 @@ public class RpcProxyManager {
                 }
                 sb.append("_").append(i);
             }
-            sb.append(");\n");
-            sb.append("}\n");
-        } else {
+        } else if (proxyType == ProxyType.HAS_RESULT) {
             sb.append(method.getReturnType().getName()).append(" result = serviceInstance.").append(method.getName()).append("(");
             for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
                 sb.append("param").append("_").append(i);
@@ -203,12 +204,7 @@ public class RpcProxyManager {
             if (method.getReturnType().isPrimitive() || method.getReturnType() == String.class) {
                 boxResult(sb, method.getReturnType());
             }
-            sb.append("return com.google.protobuf.Any.pack(value);\n");
-            sb.append("}\n");
         }
-
-        LOGGER.debug("generate method: {} body: {}", method.getName(), sb);
-        return sb.toString();
     }
 
     private void boxResult(StringBuilder sb, Class<?> returnType) {

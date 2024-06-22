@@ -60,11 +60,12 @@ public enum GatewayProcessor {
             byte[] body = new byte[payload.capacity()];
             payload.readBytes(body);
 
-            Rpc.RpcRequest request;
+            Rpc.RpcRequest request = null;
             try {
                 request = Rpc.RpcRequest.parseFrom(body);
             } catch (InvalidProtocolBufferException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("protobuf request parse error", e);
+                //TODO 错误body需要转到特定的队列，方便发现修复调整
             }
 
             if (request == null) {
@@ -102,6 +103,15 @@ public enum GatewayProcessor {
             }
         }
     },
+
+    PUBACK {
+        @Override
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+            LOGGER.info("mqtt publishAck msg: {}", mqttMessage);
+            //TODO 写入消息队列
+        }
+    },
+
 
     PUBREL {
         @Override
@@ -147,6 +157,7 @@ public enum GatewayProcessor {
             LOGGER.info("mqtt unknown msg: {}", mqttMessage);
         }
     };
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GatewayProcessor.class);
 

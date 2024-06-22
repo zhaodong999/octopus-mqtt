@@ -32,6 +32,9 @@ public class GatewayHandler extends ChannelInboundHandlerAdapter {
             case PUBLISH:
                 GatewayProcessor.PUBLISH.handle(ctx, message);
                 break;
+                case PUBACK:
+                GatewayProcessor.PUBACK.handle(ctx, message);
+                break;
             case PUBREL:
                 GatewayProcessor.PUBREL.handle(ctx, message);
                 break;

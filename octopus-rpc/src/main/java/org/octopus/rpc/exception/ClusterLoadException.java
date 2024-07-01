@@ -5,4 +5,5 @@ public class ClusterLoadException extends RpcRuntimeException {
     public ClusterLoadException(String message) {
         super(message);
     }
+    
 }

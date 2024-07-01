@@ -37,7 +37,7 @@ public class RpcServiceLocator extends Observable implements Closeable {
         try {
             namingService = NamingFactory.createNamingService(address);
         } catch (NacosException e) {
-            throw new ClusterLoadException(e);
+            throw new ClusterLoadException(e.getMessage());
         }
     }
 

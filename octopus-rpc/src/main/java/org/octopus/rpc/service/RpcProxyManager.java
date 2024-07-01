@@ -77,9 +77,9 @@ public class RpcProxyManager {
             ServiceId serviceId = new ServiceId(rpcServiceAnno.name(), rpcMethodAnno.name());
 
             if (void.class == method.getReturnType()) {
-                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.HAS_RESULT);
-            } else {
                 generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.VOID);
+            } else {
+                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.HAS_RESULT);
             }
         }
     }

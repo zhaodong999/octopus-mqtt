@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.octopus'
+
+
+dependencies {
+    api 'com.zaxxer:HikariCP:4.0.3'
+    api 'com.mysql:mysql-connector-j:8.4.0'
+    api 'org.mybatis:mybatis:3.5.11'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

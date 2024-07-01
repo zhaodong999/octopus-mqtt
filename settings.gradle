@@ -28,4 +28,5 @@ include 'octopus-rpc'
 include 'octopus-proto'
 include 'octopus-server'
 include 'octopus-client'
+include 'octopus-common'
 

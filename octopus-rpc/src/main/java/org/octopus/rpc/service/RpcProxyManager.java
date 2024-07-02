@@ -4,6 +4,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.GeneratedMessageV3;
 import javassist.*;
 import org.octopus.rpc.exception.GenerateClassException;
+import org.octopus.rpc.exception.RpcServiceNotFound;
 import org.octopus.rpc.server.anno.RpcMethod;
 import org.octopus.rpc.server.anno.RpcService;
 import org.octopus.rpc.util.ServiceUtil;
@@ -23,6 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+/**
+ * 创建代理类规则：
+ * 1. 参数如果是pb类型的，命名为unpack_{index},参数是基础类型的，参数是基础类型的，使用param_{index}
+ * 2. 返回值如果是pb类型的，命名为pack, 返回值是基础类型的，使用result
+ */
 public class RpcProxyManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcProxyManager.class);
@@ -39,7 +45,7 @@ public class RpcProxyManager {
 
     private final ConcurrentMap<ServiceId, ProxyOneWrapper> proxyOneMethods = new ConcurrentHashMap<>();
 
-    public CompletableFuture<Any> invoke(String serviceName, String method, Any... params) {
+    public CompletableFuture<Any> invoke(String serviceName, String method, Any... params) throws RpcServiceNotFound {
         ServiceId serviceId = new ServiceId(serviceName, method);
         if (proxyMethods.containsKey(serviceId)) {
             ProxyWrapper proxyWrapper = proxyMethods.get(serviceId);
@@ -47,14 +53,21 @@ public class RpcProxyManager {
                 LOGGER.info("invoke proxy: {}\t{}\t", serviceId.serviceName, serviceId.methodName);
                 return proxyWrapper.executor(params);
             });
-        } else {
-            CompletableFuture.runAsync(() -> {
-                ProxyOneWrapper proxyOneWrapper = proxyOneMethods.get(serviceId);
-                proxyOneWrapper.executor(params);
-            });
-
-            return null;
         }
+
+        // oneway
+        if (!proxyOneMethods.containsKey(serviceId)) {
+            LOGGER.warn("service not found: {}", serviceId);
+            throw new RpcServiceNotFound(serviceId.toString());
+        }
+
+        CompletableFuture.runAsync(() -> {
+            ProxyOneWrapper proxyOneWrapper = proxyOneMethods.get(serviceId);
+            proxyOneWrapper.executor(params);
+        });
+
+        return null;
+
     }
 
     public Set<String> getServiceNames() {
@@ -76,19 +89,21 @@ public class RpcProxyManager {
 
             ServiceId serviceId = new ServiceId(rpcServiceAnno.name(), rpcMethodAnno.name());
 
-            if (void.class == method.getReturnType()) {
-                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.VOID);
-            } else {
-                generateProxy(method, serviceId, serviceClass, serviceInstance, ProxyType.HAS_RESULT);
+            if (proxyMethods.containsKey(serviceId)) {
+                LOGGER.error("service already registered: {}", serviceId);
+                continue;
             }
+
+            generateProxy(method, serviceId, serviceClass, serviceInstance);
         }
     }
 
-    private void generateProxy(Method method, ServiceId serviceId, Class<?> serviceClass, Object serviceInstance, ProxyType proxyType) {
+    private void generateProxy(Method method, ServiceId serviceId, Class<?> serviceClass, Object serviceInstance) {
         CtClass ctClass;
         try {
-            ctClass = generateClass(serviceId, serviceClass, method, proxyType);
+            ctClass = generateClass(serviceId, serviceClass, method);
         } catch (NotFoundException | CannotCompileException e) {
+            LOGGER.error("generate service proxy class err", e);
             throw new GenerateClassException("generate service proxy class err");
         }
 
@@ -101,10 +116,10 @@ public class RpcProxyManager {
         try {
             Class<?> proxyClass = ctClass.toClass();
             Constructor<?> declaredConstructor = proxyClass.getDeclaredConstructor(serviceClass);
-            if (proxyType == ProxyType.VOID) {
+            if (void.class == method.getReturnType()) {
                 ProxyOneWrapper proxyOneInstance = (ProxyOneWrapper) declaredConstructor.newInstance(serviceInstance);
                 proxyOneMethods.put(serviceId, proxyOneInstance);
-            } else if (proxyType == ProxyType.HAS_RESULT) {
+            } else {
                 ProxyWrapper proxyInstance = (ProxyWrapper) declaredConstructor.newInstance(serviceInstance);
                 proxyMethods.put(serviceId, proxyInstance);
             }
@@ -115,13 +130,13 @@ public class RpcProxyManager {
         }
     }
 
-    private CtClass generateClass(ServiceId serviceId, Class<?> serviceClass, Method method, ProxyType proxyType) throws NotFoundException, CannotCompileException {
+    private CtClass generateClass(ServiceId serviceId, Class<?> serviceClass, Method method) throws NotFoundException, CannotCompileException {
         ClassPool classPool = ClassPool.getDefault();
 
         CtClass rootClass = null;
-        if (proxyType == ProxyType.VOID) {
+        if (void.class == method.getReturnType()) {
             rootClass = classPool.get(ROOT_PATH + "." + SUPER_CLASS_NAME_VOID);
-        } else if (proxyType == ProxyType.HAS_RESULT) {
+        } else {
             rootClass = classPool.get(ROOT_PATH + "." + SUPER_CLASS_NAME);
         }
         CtClass subClass = classPool.makeClass(serviceClass.getName() + ServiceUtil.firstUpperCase(serviceId.getMethodName()) + "Wrapper");
@@ -136,18 +151,18 @@ public class RpcProxyManager {
         subClass.addConstructor(ctConstructor);
 
         CtMethod ctMethod = null;
-        if (proxyType == ProxyType.VOID) {
+        if (void.class == method.getReturnType()) {
             ctMethod = new CtMethod(CtClass.voidType, "executor", new CtClass[]{classPool.get("com.google.protobuf.Any[]")}, subClass);
         } else {
             ctMethod = new CtMethod(classPool.get(PROTO_BUF_ANY_NAME), "executor", new CtClass[]{classPool.get("com.google.protobuf.Any[]")}, subClass);
         }
         ctMethod.setModifiers(Modifier.PUBLIC | Modifier.VARARGS);
         subClass.addMethod(ctMethod);
-        ctMethod.setBody(generateMethodBody(method, proxyType));
+        ctMethod.setBody(generateMethodBody(method));
         return subClass;
     }
 
-    private String generateMethodBody(Method method, ProxyType proxyType) {
+    private String generateMethodBody(Method method) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n{\n");
 
@@ -155,14 +170,7 @@ public class RpcProxyManager {
         generateMethodParam(method, sb);
 
         //invoke method
-        generateMethodInvoke(method, sb, proxyType);
-
-        //generate return
-        if (proxyType == ProxyType.VOID) {
-            sb.append(");\n");
-        } else if (proxyType == ProxyType.HAS_RESULT) {
-            sb.append("return com.google.protobuf.Any.pack(value);\n");
-        }
+        generateMethodInvoke(method, sb);
 
         //generate end
         sb.append("}\n");
@@ -183,26 +191,31 @@ public class RpcProxyManager {
         }
     }
 
-    private void generateMethodInvoke(Method method, StringBuilder sb, ProxyType proxyType) {
-        if (proxyType == ProxyType.VOID) {
-            sb.append("serviceInstance.").append(method.getName()).append("(");
-            for (int i = 0; i < method.getParameterTypes().length; i++) {
-                if (method.getParameterTypes()[i].isPrimitive() || method.getParameterTypes()[i] == String.class) {
-                    sb.append("param");
-                } else {
-                    sb.append("unpack");
-                }
-                sb.append("_").append(i);
-            }
-        } else if (proxyType == ProxyType.HAS_RESULT) {
-            sb.append(method.getReturnType().getName()).append(" result = serviceInstance.").append(method.getName()).append("(");
-            for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
-                sb.append("param").append("_").append(i);
-            }
-            sb.append(");\n");
+    private void generateMethodInvoke(Method method, StringBuilder sb) {
+        if (void.class == method.getReturnType()) {
+            sb.append("serviceInstance.");
+        } else {
+            sb.append(method.getReturnType().getName()).append(" result = serviceInstance.");
+        }
 
+        sb.append(method.getName()).append("(");
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
+            if (method.getParameterTypes()[i].isPrimitive() || method.getParameterTypes()[i] == String.class) {
+                sb.append("param");
+            } else {
+                sb.append("unpack");
+            }
+            sb.append("_").append(i);
+        }
+        sb.append(");\n");
+
+        //处理有返回值的pack
+        if (void.class != method.getReturnType()) {
             if (method.getReturnType().isPrimitive() || method.getReturnType() == String.class) {
                 boxResult(sb, method.getReturnType());
+                sb.append("return pack");
+            }else if(GeneratedMessageV3.class.isAssignableFrom(method.getReturnType())){
+                sb.append("return com.google.protobuf.Any.pack(result);\n");
             }
         }
     }
@@ -220,7 +233,7 @@ public class RpcProxyManager {
     }
 
     public void box(StringBuilder sb, String pbClassName) {
-        sb.append(pbClassName).append(" value = ");
+        sb.append(pbClassName).append(" pack = ");
         sb.append(pbClassName).append(".newBuilder().setValue(result).build();\n");
     }
 
@@ -249,8 +262,8 @@ public class RpcProxyManager {
     }
 
     public static class ServiceId {
-        private String serviceName;
-        private String methodName;
+        private final String serviceName;
+        private final String methodName;
 
         public ServiceId(String serviceName, String methodName) {
             this.serviceName = serviceName;
@@ -265,16 +278,12 @@ public class RpcProxyManager {
             return serviceName;
         }
 
-        public void setServiceName(String serviceName) {
-            this.serviceName = serviceName;
-        }
-
         public String getMethodName() {
             return methodName;
         }
 
-        public void setMethodName(String methodName) {
-            this.methodName = methodName;
+        public String toString() {
+            return serviceName + "." + methodName;
         }
 
         @Override
@@ -291,10 +300,5 @@ public class RpcProxyManager {
         }
 
 
-    }
-
-    enum ProxyType {
-        HAS_RESULT,
-        VOID
     }
 }

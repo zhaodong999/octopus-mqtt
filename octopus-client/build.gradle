@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'java-library'
 }
 
 group = 'org.octopus'
-version = '1.0-SNAPSHOT'
 
 dependencies {
+    implementation project(':')
     implementation project(':octopus-proto')
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
     testImplementation platform('org.junit:junit-bom:5.9.1')

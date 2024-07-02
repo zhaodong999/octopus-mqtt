@@ -1,8 +1,10 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
 group = 'org.octopus'
 version = '1.0-SNAPSHOT'
-
-
-apply plugin: 'java'
 
 // 设置Java源代码的兼容性版本
 sourceCompatibility = '8'
@@ -11,10 +13,10 @@ sourceCompatibility = '8'
 targetCompatibility = '8'
 
 dependencies {
-    implementation 'org.slf4j:slf4j-api:2.0.13'
-    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
-    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1'
+    api 'org.slf4j:slf4j-api:2.0.13'
+    api 'org.apache.logging.log4j:log4j-api:2.23.1'
+    api 'org.apache.logging.log4j:log4j-core:2.23.1'
+    api 'org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'

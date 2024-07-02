@@ -3,20 +3,11 @@ package org.octopus.server.db.pojo;
 import java.util.Date;
 
 public class UserEntity {
-    private long id;
     private String name;
-    private int age;
-    private String email;
+    private String device;
+    private byte[] password;
 
     private Date createTime;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -26,20 +17,20 @@ public class UserEntity {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
+    public String getDevice() {
+        return device;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setDevice(String device) {
+        this.device = device;
     }
 
-    public String getEmail() {
-        return email;
+    public byte[] getPassword() {
+        return password;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPassword(byte[] password) {
+        this.password = password;
     }
 
     public Date getCreateTime() {

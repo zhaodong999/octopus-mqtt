@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "org.octopus.proto.service.auth";
+
+message UserMessage {
+    string device = 1;
+    string name = 2;
+    bytes password = 3;
+}
+
+enum AuthType {
+    LOGIN = 0;
+    NOT_ACCOUNT = 1;
+    PASSWORD_ERROR = 2;
+}
+
+message AuthResult {
+    AuthType authType = 1; // 0: success, 1: fail
+}

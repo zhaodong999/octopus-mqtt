@@ -2,25 +2,43 @@ package org.octopus.server.service;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.StringValue;
+import org.apache.ibatis.session.SqlSession;
+import org.octopus.db.SessionFactoryUtil;
 import org.octopus.proto.gateway.Server;
 import org.octopus.proto.rpc.Rpc;
+import org.octopus.proto.service.auth.Authservice;
 import org.octopus.rpc.client.RpcClient;
 import org.octopus.rpc.cluster.BalanceType;
 import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.rpc.server.anno.RpcMethod;
 import org.octopus.rpc.server.anno.RpcService;
+import org.octopus.server.db.mapper.UserMapper;
+import org.octopus.server.db.pojo.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RpcService(name = "login")
-public class ServiceOne {
+import java.util.Objects;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOne.class);
+@RpcService(name = "authService")
+public class AuthService {
 
-    @RpcMethod(name = "say")
-    public String say(String name) {
-        return "hello: " + name;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+
+    @RpcMethod(name = "auth")
+    public Authservice.AuthResult auth(Authservice.UserMessage userMessage) {
+        SqlSession sqlSession = SessionFactoryUtil.getInstance().getSessionFactory().openSession();
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        UserEntity userEntity = mapper.selectByDevice(userMessage.getDevice());
+        if (userEntity == null) {
+            return Authservice.AuthResult.newBuilder().setAuthType(Authservice.AuthType.NOT_ACCOUNT).build();
+        }
+
+        if (Objects.equals(userEntity.getPassword(), userMessage.getPassword())) {
+            return Authservice.AuthResult.newBuilder().setAuthType(Authservice.AuthType.LOGIN).build();
+        }
+
+        return Authservice.AuthResult.newBuilder().setAuthType(Authservice.AuthType.PASSWORD_ERROR).build();
     }
 
 

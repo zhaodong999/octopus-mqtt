@@ -4,8 +4,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.mqtt.*;
+import org.octopus.gateway.exception.GatewayException;
 import org.octopus.gateway.netty.AttrKey;
 import org.octopus.proto.rpc.Rpc;
+import org.octopus.proto.service.auth.Authservice;
+import org.octopus.rpc.exception.RpcClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,40 +22,45 @@ public enum GatewayProcessor {
 
     CONNECT {
         @Override
-        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) throws GatewayException {
             MqttConnectMessage connectMessage = (MqttConnectMessage) mqttMessage;
             LOGGER.info("connectMsg: {}", connectMessage);
             MqttConnectPayload payload = connectMessage.payload();
             String id = payload.clientIdentifier();
-            String name = payload.userName();
-            String password = new String(payload.passwordInBytes());
+            try {
+                CompletableFuture<Authservice.AuthResult> future = AuthService.auth(payload.clientIdentifier(), payload.userName(), payload.passwordInBytes());
+                future.whenComplete((authResult, throwable) -> {
+                    if (throwable != null) {
+                        LOGGER.error("{}\tinvoke rpc err", id, throwable);
+                        MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
+                        return;
+                    }
 
-            CompletableFuture<AuthResult> future = AuthService.auth(id, name, password);
-            future.whenComplete((authResult, throwable) -> {
-                MqttFixedHeader connAckFixedHeader =
-                        new MqttFixedHeader(MqttMessageType.CONNACK, false, MqttQoS.AT_MOST_ONCE, false, 0);
-                MqttConnAckVariableHeader connAckVariableHeader;
-                if (throwable == null) {
-                    connAckVariableHeader =
-                            new MqttConnAckVariableHeader(authResult.getCode(), false);
-                } else {
-                    connAckVariableHeader =
-                            new MqttConnAckVariableHeader(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, false);
-                }
+                    if (authResult.getAuthType() != Authservice.AuthType.LOGIN) {
+                        LOGGER.warn("{}\t name or password err {}\t{}", id, payload.userName(), payload.passwordInBytes());
+                        MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD, ctx);
+                        return;
+                    }
 
-                ConnectionManager.putCtx(id, ctx);
-                MqttMessage connAckMsg = MqttMessageFactory.newMessage(connAckFixedHeader, connAckVariableHeader, null);
-                ctx.writeAndFlush(connAckMsg);
-                ctx.channel().attr(AttrKey.CLIENT_ID).set(id);
-                ctx.channel().attr(AttrKey.SERVER_MSG_ID).set(new AtomicInteger(1));
-                ctx.channel().attr(AttrKey.TOPICS).set(new HashMap<>());
-            });
+                    //校验成功的情况下
+                    ConnectionManager.putCtx(id, ctx);
+                    MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_ACCEPTED, ctx);
+                    //init data
+                    ctx.channel().attr(AttrKey.CLIENT_ID).set(id);
+                    ctx.channel().attr(AttrKey.SERVER_MSG_ID).set(new AtomicInteger(1));
+                    ctx.channel().attr(AttrKey.TOPICS).set(new HashMap<>());
+
+                });
+            } catch (RpcClientException e) {
+                LOGGER.error("auth error", e);
+                MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
+            }
         }
     },
 
     PUBLISH {
         @Override
-        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) throws GatewayException {
             MqttPublishMessage publishMsg = (MqttPublishMessage) mqttMessage;
             LOGGER.info("publishMsg: {}", publishMsg);
 
@@ -65,7 +73,7 @@ public enum GatewayProcessor {
                 request = Rpc.RpcRequest.parseFrom(body);
             } catch (InvalidProtocolBufferException e) {
                 LOGGER.error("protobuf request parse error", e);
-                //TODO 错误body需要转到特定的队列，方便发现修复调整
+                throw new GatewayException(e.getMessage());
             }
 
             if (request == null) {
@@ -161,5 +169,5 @@ public enum GatewayProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GatewayProcessor.class);
 
-    public abstract void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage);
+    public abstract void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) throws GatewayException;
 }

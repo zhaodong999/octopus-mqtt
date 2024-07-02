@@ -23,7 +23,7 @@ public class GatewayHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         MqttMessage message = (MqttMessage) msg;
-        LOGGER.info("Received MQTT message: {}", message);
+        LOGGER.debug("Received MQTT message: {}", message);
 
         switch (message.fixedHeader().messageType()) {
             case CONNECT:

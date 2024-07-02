@@ -42,9 +42,25 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
             LOGGER.info("receive packet: {}/{}", rpcRequest.getService(), rpcRequest.getMethod());
             CompletableFuture<Any> completableFuture = rpcServiceManager.invoke(rpcRequest.getService(), rpcRequest.getMethod(), params);
             if (completableFuture == null) {
+                LOGGER.warn("rpc response null, trackId: {}", msg.getVariableHeader().getTrackerId());
                 return;
             }
-            completableFuture.thenAccept(any -> {
+
+            completableFuture.whenComplete((any, throwable) -> {
+
+                if (throwable != null) {
+                    LOGGER.error("proxy invoke error: {}", msg.getVariableHeader().getTrackerId(), throwable);
+                    Rpc.RpcResponse.Builder builder = Rpc.RpcResponse.newBuilder();
+                    builder.setStatus(Rpc.RpcStatus.FAILURE);
+                    builder.setReason(throwable.getMessage());
+                    RpcMsg rpcMsg = new RpcMsg(ProtoCommand.RESPONSE);
+                    VariableHeader variableHeader = new VariableHeader(msg.getVariableHeader().getTrackerId(), SerializeType.PROTO);
+                    rpcMsg.setVariableHeader(variableHeader);
+                    rpcMsg.setPayLoad(builder.build().toByteArray());
+                    ctx.channel().writeAndFlush(rpcMsg);
+                    return;
+                }
+
                 LOGGER.info("get proxy invoke result: {}", msg.getVariableHeader().getTrackerId());
                 Rpc.RpcResponse.Builder builder = Rpc.RpcResponse.newBuilder();
                 builder.setStatus(Rpc.RpcStatus.OK);

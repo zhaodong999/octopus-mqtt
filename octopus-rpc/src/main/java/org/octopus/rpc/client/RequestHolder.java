@@ -25,7 +25,7 @@ public class RequestHolder {
 
         TIMER.newTimeout(timeout -> {
             REQUESTS.remove(id);
-            callBack.completeExceptionally(new RpcTimeoutException());
+            callBack.completeExceptionally(new RpcTimeoutException("timeout > 30s"));
         }, 30, TimeUnit.SECONDS);
     }
 

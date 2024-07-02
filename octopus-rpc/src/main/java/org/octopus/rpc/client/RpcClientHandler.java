@@ -21,7 +21,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcMsg msg) throws Exception {
         if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.PONG) {
-            LOGGER.info("rpc receive pong");
+            LOGGER.debug("rpc receive pong");
             return;
         }
 
@@ -53,7 +53,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
                 LOGGER.warn("rpc client close conn when read idle");
                 ctx.close();
             } else if (e.state() == IdleState.WRITER_IDLE) {
-                LOGGER.info("rpc send ping");
+                LOGGER.debug("rpc send ping");
                 ctx.writeAndFlush(RpcMsg.PING);
             }
         }

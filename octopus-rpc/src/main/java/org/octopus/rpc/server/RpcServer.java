@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 
-public class RpcServer implements Closeable{
+public class RpcServer implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
 
@@ -39,7 +39,7 @@ public class RpcServer implements Closeable{
         this.rpcServiceLocator = rpcServiceLocator;
     }
 
-    public void start() throws InterruptedException {
+    public void start(boolean await) throws InterruptedException {
         bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup();
 
@@ -65,6 +65,9 @@ public class RpcServer implements Closeable{
             }
         });
 
+        if (await) {
+            channelFuture.channel().closeFuture().sync();
+        }
     }
 
     public void close() throws IOException {

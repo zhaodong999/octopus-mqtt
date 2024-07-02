@@ -75,7 +75,7 @@ public class RpcConnection implements Closeable {
 
     public void send(Rpc.RpcRequest rpcRequest, CompletableFuture<Rpc.RpcResponse> callBack) throws RpcClientException {
         if (channel == null || !channel.isWritable()) {
-            throw new RpcClientException();
+            throw new RpcClientException("channel is not writable");
         }
 
         RpcMsg rpcMsg = new RpcMsg(ProtoCommand.REQUEST);
@@ -87,8 +87,10 @@ public class RpcConnection implements Closeable {
         channel.writeAndFlush(rpcMsg).addListener(f -> {
             if (f.isSuccess()) {
                 RequestHolder.put(id, callBack);
+                LOGGER.info("send request trackerId:\t{}", id);
             } else {
                 callBack.completeExceptionally(f.cause());
+                LOGGER.error("send request err trackerId:\t{}", id, f.cause());
             }
         });
     }

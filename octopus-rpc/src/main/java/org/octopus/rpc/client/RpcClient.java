@@ -46,7 +46,7 @@ public class RpcClient implements Closeable {
 
     public CompletableFuture<Rpc.RpcResponse> call(Rpc.RpcRequest request) throws RpcClientException {
         if (!rpcConnection.available()) {
-            throw new RpcClientException();
+            throw new RpcClientException("rpc connection not available");
         }
         CompletableFuture<Rpc.RpcResponse> callBack = new CompletableFuture<>();
         rpcConnection.send(request, callBack);
@@ -59,7 +59,7 @@ public class RpcClient implements Closeable {
 
     public void callOneway(Rpc.RpcRequest request) throws RpcClientException {
         if (!rpcConnection.available()) {
-            throw new RpcClientException();
+            throw new RpcClientException("rpc connection not available");
         }
 
         rpcConnection.sendNoResponse(request);

@@ -23,17 +23,16 @@ public class GateWayServer {
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new SendService());
 
-        String addr = GatewayConfigManager.getInstance().getServiceRegistrationAddr();
         try (RpcServiceLocator rpcServiceLocator = new RpcServiceLocator();
              RpcServer rpcServer = new RpcServer(GatewayConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator);
              MqttServer mqttServer = new MqttServer(GatewayConfigManager.getInstance().getMqttPort())) {
 
             // 连接集群
-            rpcServiceLocator.connectCluster(addr);
+            rpcServiceLocator.connectCluster(GatewayConfigManager.getInstance().getServiceRegistrationAddr());
             RpcClusterFactory.init(rpcServiceLocator);
 
             // 启动服务
-            rpcServer.start();
+            rpcServer.start(false);
 
             // 启动网关
             mqttServer.start();

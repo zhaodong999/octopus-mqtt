@@ -32,14 +32,20 @@ class RpcClientTest {
     void invokeTest() throws RpcClientException, IOException, ExecutionException, InterruptedException {
         //建立连接
         RpcClient rpcClient = new RpcClient(EndPoint.of("localhost", 8880), nioEventLoopGroup);
-
         rpcClient.connect();
+
+
         Any params = Any.pack(Int32Value.of(1));
 
         //service login,  method say,  param rpcClient
-        Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder().setService("serviceDemo").setMethod("test").addArgs(params).build();
-        CompletableFuture<Rpc.RpcResponse> call = rpcClient.call(rpcRequest);
+        Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder()
+                .setService("serviceDemo")
+                .setMethod("test")
+                .addArgs(params)
+                .build();
 
+        //异步调用
+        CompletableFuture<Rpc.RpcResponse> call = rpcClient.call(rpcRequest);
         //同步获得结果
         Rpc.RpcResponse rpcResponse = call.get();
         Any result = rpcResponse.getResult();
@@ -50,8 +56,7 @@ class RpcClientTest {
 
     @Test
     void invokeOneWay() throws Exception {
-        NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
-        //建立连接
+                //建立连接
         RpcClient rpcClient = new RpcClient(EndPoint.of("localhost", 8880), nioEventLoopGroup);
 
         rpcClient.connect();

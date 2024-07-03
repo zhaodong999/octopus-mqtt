@@ -21,8 +21,9 @@ public class GameServer {
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new AuthService());
 
-
+        //初始化数据库
         SessionFactoryUtil.getInstance().init();
+
         //启动rpc 监听端口，
         try (RpcServiceLocator rpcServiceLocator = new RpcServiceLocator();
              RpcServer rpcServer = new RpcServer(ServerConfigManager.getInstance().getServerPort(), rpcProxyManager, rpcServiceLocator)) {

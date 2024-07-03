@@ -19,53 +19,59 @@ public final class Server {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string id = 1;</code>
-     * @return The id.
+     * <code>int32 trackerId = 1;</code>
+     * @return The trackerId.
      */
-    java.lang.String getId();
-    /**
-     * <code>string id = 1;</code>
-     * @return The bytes for id.
-     */
-    com.google.protobuf.ByteString
-        getIdBytes();
+    int getTrackerId();
 
     /**
-     * <code>string topic = 2;</code>
+     * <code>string identity = 2;</code>
+     * @return The identity.
+     */
+    java.lang.String getIdentity();
+    /**
+     * <code>string identity = 2;</code>
+     * @return The bytes for identity.
+     */
+    com.google.protobuf.ByteString
+        getIdentityBytes();
+
+    /**
+     * <code>string topic = 3;</code>
      * @return The topic.
      */
     java.lang.String getTopic();
     /**
-     * <code>string topic = 2;</code>
+     * <code>string topic = 3;</code>
      * @return The bytes for topic.
      */
     com.google.protobuf.ByteString
         getTopicBytes();
 
     /**
-     * <code>int32 qos = 3;</code>
+     * <code>int32 qos = 4;</code>
      * @return The qos.
      */
     int getQos();
 
     /**
-     * <code>int32 cmd = 4;</code>
+     * <code>int32 cmd = 5;</code>
      * @return The cmd.
      */
     int getCmd();
 
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      * @return Whether the body field is set.
      */
     boolean hasBody();
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      * @return The body.
      */
     com.google.protobuf.Any getBody();
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      */
     com.google.protobuf.AnyOrBuilder getBodyOrBuilder();
   }
@@ -82,7 +88,7 @@ public final class Server {
       super(builder);
     }
     private ServerMessage() {
-      id_ = "";
+      identity_ = "";
       topic_ = "";
     }
 
@@ -111,48 +117,59 @@ public final class Server {
               org.octopus.proto.gateway.Server.ServerMessage.class, org.octopus.proto.gateway.Server.ServerMessage.Builder.class);
     }
 
-    public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    public static final int TRACKERID_FIELD_NUMBER = 1;
+    private int trackerId_;
     /**
-     * <code>string id = 1;</code>
-     * @return The id.
+     * <code>int32 trackerId = 1;</code>
+     * @return The trackerId.
      */
     @java.lang.Override
-    public java.lang.String getId() {
-      java.lang.Object ref = id_;
+    public int getTrackerId() {
+      return trackerId_;
+    }
+
+    public static final int IDENTITY_FIELD_NUMBER = 2;
+    private volatile java.lang.Object identity_;
+    /**
+     * <code>string identity = 2;</code>
+     * @return The identity.
+     */
+    @java.lang.Override
+    public java.lang.String getIdentity() {
+      java.lang.Object ref = identity_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        id_ = s;
+        identity_ = s;
         return s;
       }
     }
     /**
-     * <code>string id = 1;</code>
-     * @return The bytes for id.
+     * <code>string identity = 2;</code>
+     * @return The bytes for identity.
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getIdBytes() {
-      java.lang.Object ref = id_;
+        getIdentityBytes() {
+      java.lang.Object ref = identity_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        id_ = b;
+        identity_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    public static final int TOPIC_FIELD_NUMBER = 2;
+    public static final int TOPIC_FIELD_NUMBER = 3;
     private volatile java.lang.Object topic_;
     /**
-     * <code>string topic = 2;</code>
+     * <code>string topic = 3;</code>
      * @return The topic.
      */
     @java.lang.Override
@@ -169,7 +186,7 @@ public final class Server {
       }
     }
     /**
-     * <code>string topic = 2;</code>
+     * <code>string topic = 3;</code>
      * @return The bytes for topic.
      */
     @java.lang.Override
@@ -187,10 +204,10 @@ public final class Server {
       }
     }
 
-    public static final int QOS_FIELD_NUMBER = 3;
+    public static final int QOS_FIELD_NUMBER = 4;
     private int qos_;
     /**
-     * <code>int32 qos = 3;</code>
+     * <code>int32 qos = 4;</code>
      * @return The qos.
      */
     @java.lang.Override
@@ -198,10 +215,10 @@ public final class Server {
       return qos_;
     }
 
-    public static final int CMD_FIELD_NUMBER = 4;
+    public static final int CMD_FIELD_NUMBER = 5;
     private int cmd_;
     /**
-     * <code>int32 cmd = 4;</code>
+     * <code>int32 cmd = 5;</code>
      * @return The cmd.
      */
     @java.lang.Override
@@ -209,10 +226,10 @@ public final class Server {
       return cmd_;
     }
 
-    public static final int BODY_FIELD_NUMBER = 5;
+    public static final int BODY_FIELD_NUMBER = 6;
     private com.google.protobuf.Any body_;
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      * @return Whether the body field is set.
      */
     @java.lang.Override
@@ -220,7 +237,7 @@ public final class Server {
       return body_ != null;
     }
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      * @return The body.
      */
     @java.lang.Override
@@ -228,7 +245,7 @@ public final class Server {
       return body_ == null ? com.google.protobuf.Any.getDefaultInstance() : body_;
     }
     /**
-     * <code>.google.protobuf.Any body = 5;</code>
+     * <code>.google.protobuf.Any body = 6;</code>
      */
     @java.lang.Override
     public com.google.protobuf.AnyOrBuilder getBodyOrBuilder() {
@@ -249,20 +266,23 @@ public final class Server {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
+      if (trackerId_ != 0) {
+        output.writeInt32(1, trackerId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(identity_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, identity_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(topic_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, topic_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, topic_);
       }
       if (qos_ != 0) {
-        output.writeInt32(3, qos_);
+        output.writeInt32(4, qos_);
       }
       if (cmd_ != 0) {
-        output.writeInt32(4, cmd_);
+        output.writeInt32(5, cmd_);
       }
       if (body_ != null) {
-        output.writeMessage(5, getBody());
+        output.writeMessage(6, getBody());
       }
       getUnknownFields().writeTo(output);
     }
@@ -273,23 +293,27 @@ public final class Server {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
+      if (trackerId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, trackerId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(identity_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, identity_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(topic_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, topic_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, topic_);
       }
       if (qos_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, qos_);
+          .computeInt32Size(4, qos_);
       }
       if (cmd_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, cmd_);
+          .computeInt32Size(5, cmd_);
       }
       if (body_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, getBody());
+          .computeMessageSize(6, getBody());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -306,8 +330,10 @@ public final class Server {
       }
       org.octopus.proto.gateway.Server.ServerMessage other = (org.octopus.proto.gateway.Server.ServerMessage) obj;
 
-      if (!getId()
-          .equals(other.getId())) return false;
+      if (getTrackerId()
+          != other.getTrackerId()) return false;
+      if (!getIdentity()
+          .equals(other.getIdentity())) return false;
       if (!getTopic()
           .equals(other.getTopic())) return false;
       if (getQos()
@@ -330,8 +356,10 @@ public final class Server {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId().hashCode();
+      hash = (37 * hash) + TRACKERID_FIELD_NUMBER;
+      hash = (53 * hash) + getTrackerId();
+      hash = (37 * hash) + IDENTITY_FIELD_NUMBER;
+      hash = (53 * hash) + getIdentity().hashCode();
       hash = (37 * hash) + TOPIC_FIELD_NUMBER;
       hash = (53 * hash) + getTopic().hashCode();
       hash = (37 * hash) + QOS_FIELD_NUMBER;
@@ -470,7 +498,9 @@ public final class Server {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        id_ = "";
+        trackerId_ = 0;
+
+        identity_ = "";
 
         topic_ = "";
 
@@ -510,7 +540,8 @@ public final class Server {
       @java.lang.Override
       public org.octopus.proto.gateway.Server.ServerMessage buildPartial() {
         org.octopus.proto.gateway.Server.ServerMessage result = new org.octopus.proto.gateway.Server.ServerMessage(this);
-        result.id_ = id_;
+        result.trackerId_ = trackerId_;
+        result.identity_ = identity_;
         result.topic_ = topic_;
         result.qos_ = qos_;
         result.cmd_ = cmd_;
@@ -567,8 +598,11 @@ public final class Server {
 
       public Builder mergeFrom(org.octopus.proto.gateway.Server.ServerMessage other) {
         if (other == org.octopus.proto.gateway.Server.ServerMessage.getDefaultInstance()) return this;
-        if (!other.getId().isEmpty()) {
-          id_ = other.id_;
+        if (other.getTrackerId() != 0) {
+          setTrackerId(other.getTrackerId());
+        }
+        if (!other.getIdentity().isEmpty()) {
+          identity_ = other.identity_;
           onChanged();
         }
         if (!other.getTopic().isEmpty()) {
@@ -610,26 +644,1131 @@ public final class Server {
               case 0:
                 done = true;
                 break;
-              case 10: {
-                id_ = input.readStringRequireUtf8();
+              case 8: {
+                trackerId_ = input.readInt32();
 
                 break;
-              } // case 10
+              } // case 8
               case 18: {
-                topic_ = input.readStringRequireUtf8();
+                identity_ = input.readStringRequireUtf8();
 
                 break;
               } // case 18
-              case 24: {
+              case 26: {
+                topic_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              case 32: {
                 qos_ = input.readInt32();
 
                 break;
-              } // case 24
-              case 32: {
+              } // case 32
+              case 40: {
                 cmd_ = input.readInt32();
 
                 break;
-              } // case 32
+              } // case 40
+              case 50: {
+                input.readMessage(
+                    getBodyFieldBuilder().getBuilder(),
+                    extensionRegistry);
+
+                break;
+              } // case 50
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private int trackerId_ ;
+      /**
+       * <code>int32 trackerId = 1;</code>
+       * @return The trackerId.
+       */
+      @java.lang.Override
+      public int getTrackerId() {
+        return trackerId_;
+      }
+      /**
+       * <code>int32 trackerId = 1;</code>
+       * @param value The trackerId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTrackerId(int value) {
+        
+        trackerId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 trackerId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTrackerId() {
+        
+        trackerId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object identity_ = "";
+      /**
+       * <code>string identity = 2;</code>
+       * @return The identity.
+       */
+      public java.lang.String getIdentity() {
+        java.lang.Object ref = identity_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          identity_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string identity = 2;</code>
+       * @return The bytes for identity.
+       */
+      public com.google.protobuf.ByteString
+          getIdentityBytes() {
+        java.lang.Object ref = identity_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          identity_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string identity = 2;</code>
+       * @param value The identity to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIdentity(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        identity_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string identity = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIdentity() {
+        
+        identity_ = getDefaultInstance().getIdentity();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string identity = 2;</code>
+       * @param value The bytes for identity to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIdentityBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        identity_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object topic_ = "";
+      /**
+       * <code>string topic = 3;</code>
+       * @return The topic.
+       */
+      public java.lang.String getTopic() {
+        java.lang.Object ref = topic_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          topic_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string topic = 3;</code>
+       * @return The bytes for topic.
+       */
+      public com.google.protobuf.ByteString
+          getTopicBytes() {
+        java.lang.Object ref = topic_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          topic_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string topic = 3;</code>
+       * @param value The topic to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTopic(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string topic = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTopic() {
+        
+        topic_ = getDefaultInstance().getTopic();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string topic = 3;</code>
+       * @param value The bytes for topic to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTopicBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int qos_ ;
+      /**
+       * <code>int32 qos = 4;</code>
+       * @return The qos.
+       */
+      @java.lang.Override
+      public int getQos() {
+        return qos_;
+      }
+      /**
+       * <code>int32 qos = 4;</code>
+       * @param value The qos to set.
+       * @return This builder for chaining.
+       */
+      public Builder setQos(int value) {
+        
+        qos_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 qos = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearQos() {
+        
+        qos_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int cmd_ ;
+      /**
+       * <code>int32 cmd = 5;</code>
+       * @return The cmd.
+       */
+      @java.lang.Override
+      public int getCmd() {
+        return cmd_;
+      }
+      /**
+       * <code>int32 cmd = 5;</code>
+       * @param value The cmd to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCmd(int value) {
+        
+        cmd_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 cmd = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCmd() {
+        
+        cmd_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.Any body_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> bodyBuilder_;
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       * @return Whether the body field is set.
+       */
+      public boolean hasBody() {
+        return bodyBuilder_ != null || body_ != null;
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       * @return The body.
+       */
+      public com.google.protobuf.Any getBody() {
+        if (bodyBuilder_ == null) {
+          return body_ == null ? com.google.protobuf.Any.getDefaultInstance() : body_;
+        } else {
+          return bodyBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public Builder setBody(com.google.protobuf.Any value) {
+        if (bodyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          body_ = value;
+          onChanged();
+        } else {
+          bodyBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public Builder setBody(
+          com.google.protobuf.Any.Builder builderForValue) {
+        if (bodyBuilder_ == null) {
+          body_ = builderForValue.build();
+          onChanged();
+        } else {
+          bodyBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public Builder mergeBody(com.google.protobuf.Any value) {
+        if (bodyBuilder_ == null) {
+          if (body_ != null) {
+            body_ =
+              com.google.protobuf.Any.newBuilder(body_).mergeFrom(value).buildPartial();
+          } else {
+            body_ = value;
+          }
+          onChanged();
+        } else {
+          bodyBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public Builder clearBody() {
+        if (bodyBuilder_ == null) {
+          body_ = null;
+          onChanged();
+        } else {
+          body_ = null;
+          bodyBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public com.google.protobuf.Any.Builder getBodyBuilder() {
+        
+        onChanged();
+        return getBodyFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      public com.google.protobuf.AnyOrBuilder getBodyOrBuilder() {
+        if (bodyBuilder_ != null) {
+          return bodyBuilder_.getMessageOrBuilder();
+        } else {
+          return body_ == null ?
+              com.google.protobuf.Any.getDefaultInstance() : body_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Any body = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+          getBodyFieldBuilder() {
+        if (bodyBuilder_ == null) {
+          bodyBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                  getBody(),
+                  getParentForChildren(),
+                  isClean());
+          body_ = null;
+        }
+        return bodyBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:ServerMessage)
+    }
+
+    // @@protoc_insertion_point(class_scope:ServerMessage)
+    private static final org.octopus.proto.gateway.Server.ServerMessage DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new org.octopus.proto.gateway.Server.ServerMessage();
+    }
+
+    public static org.octopus.proto.gateway.Server.ServerMessage getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ServerMessage>
+        PARSER = new com.google.protobuf.AbstractParser<ServerMessage>() {
+      @java.lang.Override
+      public ServerMessage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ServerMessage> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ServerMessage> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public org.octopus.proto.gateway.Server.ServerMessage getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ClientMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:ClientMessage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 trackerId = 1;</code>
+     * @return The trackerId.
+     */
+    int getTrackerId();
+
+    /**
+     * <code>string identity = 2;</code>
+     * @return The identity.
+     */
+    java.lang.String getIdentity();
+    /**
+     * <code>string identity = 2;</code>
+     * @return The bytes for identity.
+     */
+    com.google.protobuf.ByteString
+        getIdentityBytes();
+
+    /**
+     * <code>string service = 3;</code>
+     * @return The service.
+     */
+    java.lang.String getService();
+    /**
+     * <code>string service = 3;</code>
+     * @return The bytes for service.
+     */
+    com.google.protobuf.ByteString
+        getServiceBytes();
+
+    /**
+     * <code>string method = 4;</code>
+     * @return The method.
+     */
+    java.lang.String getMethod();
+    /**
+     * <code>string method = 4;</code>
+     * @return The bytes for method.
+     */
+    com.google.protobuf.ByteString
+        getMethodBytes();
+
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     * @return Whether the body field is set.
+     */
+    boolean hasBody();
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     * @return The body.
+     */
+    com.google.protobuf.Any getBody();
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     */
+    com.google.protobuf.AnyOrBuilder getBodyOrBuilder();
+  }
+  /**
+   * Protobuf type {@code ClientMessage}
+   */
+  public static final class ClientMessage extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:ClientMessage)
+      ClientMessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ClientMessage.newBuilder() to construct.
+    private ClientMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ClientMessage() {
+      identity_ = "";
+      service_ = "";
+      method_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ClientMessage();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.octopus.proto.gateway.Server.internal_static_ClientMessage_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.octopus.proto.gateway.Server.internal_static_ClientMessage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.octopus.proto.gateway.Server.ClientMessage.class, org.octopus.proto.gateway.Server.ClientMessage.Builder.class);
+    }
+
+    public static final int TRACKERID_FIELD_NUMBER = 1;
+    private int trackerId_;
+    /**
+     * <code>int32 trackerId = 1;</code>
+     * @return The trackerId.
+     */
+    @java.lang.Override
+    public int getTrackerId() {
+      return trackerId_;
+    }
+
+    public static final int IDENTITY_FIELD_NUMBER = 2;
+    private volatile java.lang.Object identity_;
+    /**
+     * <code>string identity = 2;</code>
+     * @return The identity.
+     */
+    @java.lang.Override
+    public java.lang.String getIdentity() {
+      java.lang.Object ref = identity_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        identity_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string identity = 2;</code>
+     * @return The bytes for identity.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getIdentityBytes() {
+      java.lang.Object ref = identity_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        identity_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SERVICE_FIELD_NUMBER = 3;
+    private volatile java.lang.Object service_;
+    /**
+     * <code>string service = 3;</code>
+     * @return The service.
+     */
+    @java.lang.Override
+    public java.lang.String getService() {
+      java.lang.Object ref = service_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        service_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string service = 3;</code>
+     * @return The bytes for service.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getServiceBytes() {
+      java.lang.Object ref = service_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        service_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int METHOD_FIELD_NUMBER = 4;
+    private volatile java.lang.Object method_;
+    /**
+     * <code>string method = 4;</code>
+     * @return The method.
+     */
+    @java.lang.Override
+    public java.lang.String getMethod() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        method_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string method = 4;</code>
+     * @return The bytes for method.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMethodBytes() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        method_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BODY_FIELD_NUMBER = 5;
+    private com.google.protobuf.Any body_;
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     * @return Whether the body field is set.
+     */
+    @java.lang.Override
+    public boolean hasBody() {
+      return body_ != null;
+    }
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     * @return The body.
+     */
+    @java.lang.Override
+    public com.google.protobuf.Any getBody() {
+      return body_ == null ? com.google.protobuf.Any.getDefaultInstance() : body_;
+    }
+    /**
+     * <code>.google.protobuf.Any body = 5;</code>
+     */
+    @java.lang.Override
+    public com.google.protobuf.AnyOrBuilder getBodyOrBuilder() {
+      return getBody();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (trackerId_ != 0) {
+        output.writeInt32(1, trackerId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(identity_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, identity_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(service_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, service_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(method_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, method_);
+      }
+      if (body_ != null) {
+        output.writeMessage(5, getBody());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (trackerId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, trackerId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(identity_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, identity_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(service_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, service_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(method_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, method_);
+      }
+      if (body_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getBody());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.octopus.proto.gateway.Server.ClientMessage)) {
+        return super.equals(obj);
+      }
+      org.octopus.proto.gateway.Server.ClientMessage other = (org.octopus.proto.gateway.Server.ClientMessage) obj;
+
+      if (getTrackerId()
+          != other.getTrackerId()) return false;
+      if (!getIdentity()
+          .equals(other.getIdentity())) return false;
+      if (!getService()
+          .equals(other.getService())) return false;
+      if (!getMethod()
+          .equals(other.getMethod())) return false;
+      if (hasBody() != other.hasBody()) return false;
+      if (hasBody()) {
+        if (!getBody()
+            .equals(other.getBody())) return false;
+      }
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TRACKERID_FIELD_NUMBER;
+      hash = (53 * hash) + getTrackerId();
+      hash = (37 * hash) + IDENTITY_FIELD_NUMBER;
+      hash = (53 * hash) + getIdentity().hashCode();
+      hash = (37 * hash) + SERVICE_FIELD_NUMBER;
+      hash = (53 * hash) + getService().hashCode();
+      hash = (37 * hash) + METHOD_FIELD_NUMBER;
+      hash = (53 * hash) + getMethod().hashCode();
+      if (hasBody()) {
+        hash = (37 * hash) + BODY_FIELD_NUMBER;
+        hash = (53 * hash) + getBody().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static org.octopus.proto.gateway.Server.ClientMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(org.octopus.proto.gateway.Server.ClientMessage prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code ClientMessage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:ClientMessage)
+        org.octopus.proto.gateway.Server.ClientMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.octopus.proto.gateway.Server.internal_static_ClientMessage_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.octopus.proto.gateway.Server.internal_static_ClientMessage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.octopus.proto.gateway.Server.ClientMessage.class, org.octopus.proto.gateway.Server.ClientMessage.Builder.class);
+      }
+
+      // Construct using org.octopus.proto.gateway.Server.ClientMessage.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        trackerId_ = 0;
+
+        identity_ = "";
+
+        service_ = "";
+
+        method_ = "";
+
+        if (bodyBuilder_ == null) {
+          body_ = null;
+        } else {
+          body_ = null;
+          bodyBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.octopus.proto.gateway.Server.internal_static_ClientMessage_descriptor;
+      }
+
+      @java.lang.Override
+      public org.octopus.proto.gateway.Server.ClientMessage getDefaultInstanceForType() {
+        return org.octopus.proto.gateway.Server.ClientMessage.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public org.octopus.proto.gateway.Server.ClientMessage build() {
+        org.octopus.proto.gateway.Server.ClientMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public org.octopus.proto.gateway.Server.ClientMessage buildPartial() {
+        org.octopus.proto.gateway.Server.ClientMessage result = new org.octopus.proto.gateway.Server.ClientMessage(this);
+        result.trackerId_ = trackerId_;
+        result.identity_ = identity_;
+        result.service_ = service_;
+        result.method_ = method_;
+        if (bodyBuilder_ == null) {
+          result.body_ = body_;
+        } else {
+          result.body_ = bodyBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.octopus.proto.gateway.Server.ClientMessage) {
+          return mergeFrom((org.octopus.proto.gateway.Server.ClientMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.octopus.proto.gateway.Server.ClientMessage other) {
+        if (other == org.octopus.proto.gateway.Server.ClientMessage.getDefaultInstance()) return this;
+        if (other.getTrackerId() != 0) {
+          setTrackerId(other.getTrackerId());
+        }
+        if (!other.getIdentity().isEmpty()) {
+          identity_ = other.identity_;
+          onChanged();
+        }
+        if (!other.getService().isEmpty()) {
+          service_ = other.service_;
+          onChanged();
+        }
+        if (!other.getMethod().isEmpty()) {
+          method_ = other.method_;
+          onChanged();
+        }
+        if (other.hasBody()) {
+          mergeBody(other.getBody());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                trackerId_ = input.readInt32();
+
+                break;
+              } // case 8
+              case 18: {
+                identity_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 26: {
+                service_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              case 34: {
+                method_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 34
               case 42: {
                 input.readMessage(
                     getBodyFieldBuilder().getBuilder(),
@@ -653,216 +1792,261 @@ public final class Server {
         return this;
       }
 
-      private java.lang.Object id_ = "";
+      private int trackerId_ ;
       /**
-       * <code>string id = 1;</code>
-       * @return The id.
+       * <code>int32 trackerId = 1;</code>
+       * @return The trackerId.
        */
-      public java.lang.String getId() {
-        java.lang.Object ref = id_;
+      @java.lang.Override
+      public int getTrackerId() {
+        return trackerId_;
+      }
+      /**
+       * <code>int32 trackerId = 1;</code>
+       * @param value The trackerId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTrackerId(int value) {
+        
+        trackerId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 trackerId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTrackerId() {
+        
+        trackerId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object identity_ = "";
+      /**
+       * <code>string identity = 2;</code>
+       * @return The identity.
+       */
+      public java.lang.String getIdentity() {
+        java.lang.Object ref = identity_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          id_ = s;
+          identity_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string id = 1;</code>
-       * @return The bytes for id.
+       * <code>string identity = 2;</code>
+       * @return The bytes for identity.
        */
       public com.google.protobuf.ByteString
-          getIdBytes() {
-        java.lang.Object ref = id_;
+          getIdentityBytes() {
+        java.lang.Object ref = identity_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          id_ = b;
+          identity_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string id = 1;</code>
-       * @param value The id to set.
+       * <code>string identity = 2;</code>
+       * @param value The identity to set.
        * @return This builder for chaining.
        */
-      public Builder setId(
+      public Builder setIdentity(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        id_ = value;
+        identity_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string id = 1;</code>
+       * <code>string identity = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearId() {
+      public Builder clearIdentity() {
         
-        id_ = getDefaultInstance().getId();
+        identity_ = getDefaultInstance().getIdentity();
         onChanged();
         return this;
       }
       /**
-       * <code>string id = 1;</code>
-       * @param value The bytes for id to set.
+       * <code>string identity = 2;</code>
+       * @param value The bytes for identity to set.
        * @return This builder for chaining.
        */
-      public Builder setIdBytes(
+      public Builder setIdentityBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        id_ = value;
+        identity_ = value;
         onChanged();
         return this;
       }
 
-      private java.lang.Object topic_ = "";
+      private java.lang.Object service_ = "";
       /**
-       * <code>string topic = 2;</code>
-       * @return The topic.
+       * <code>string service = 3;</code>
+       * @return The service.
        */
-      public java.lang.String getTopic() {
-        java.lang.Object ref = topic_;
+      public java.lang.String getService() {
+        java.lang.Object ref = service_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          topic_ = s;
+          service_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string topic = 2;</code>
-       * @return The bytes for topic.
+       * <code>string service = 3;</code>
+       * @return The bytes for service.
        */
       public com.google.protobuf.ByteString
-          getTopicBytes() {
-        java.lang.Object ref = topic_;
+          getServiceBytes() {
+        java.lang.Object ref = service_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          topic_ = b;
+          service_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string topic = 2;</code>
-       * @param value The topic to set.
+       * <code>string service = 3;</code>
+       * @param value The service to set.
        * @return This builder for chaining.
        */
-      public Builder setTopic(
+      public Builder setService(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        topic_ = value;
+        service_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string topic = 2;</code>
+       * <code>string service = 3;</code>
        * @return This builder for chaining.
        */
-      public Builder clearTopic() {
+      public Builder clearService() {
         
-        topic_ = getDefaultInstance().getTopic();
+        service_ = getDefaultInstance().getService();
         onChanged();
         return this;
       }
       /**
-       * <code>string topic = 2;</code>
-       * @param value The bytes for topic to set.
+       * <code>string service = 3;</code>
+       * @param value The bytes for service to set.
        * @return This builder for chaining.
        */
-      public Builder setTopicBytes(
+      public Builder setServiceBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        topic_ = value;
+        service_ = value;
         onChanged();
         return this;
       }
 
-      private int qos_ ;
+      private java.lang.Object method_ = "";
       /**
-       * <code>int32 qos = 3;</code>
-       * @return The qos.
+       * <code>string method = 4;</code>
+       * @return The method.
        */
-      @java.lang.Override
-      public int getQos() {
-        return qos_;
+      public java.lang.String getMethod() {
+        java.lang.Object ref = method_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          method_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>int32 qos = 3;</code>
-       * @param value The qos to set.
+       * <code>string method = 4;</code>
+       * @return The bytes for method.
+       */
+      public com.google.protobuf.ByteString
+          getMethodBytes() {
+        java.lang.Object ref = method_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          method_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string method = 4;</code>
+       * @param value The method to set.
        * @return This builder for chaining.
        */
-      public Builder setQos(int value) {
-        
-        qos_ = value;
+      public Builder setMethod(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        method_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 qos = 3;</code>
+       * <code>string method = 4;</code>
        * @return This builder for chaining.
        */
-      public Builder clearQos() {
+      public Builder clearMethod() {
         
-        qos_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int cmd_ ;
-      /**
-       * <code>int32 cmd = 4;</code>
-       * @return The cmd.
-       */
-      @java.lang.Override
-      public int getCmd() {
-        return cmd_;
-      }
-      /**
-       * <code>int32 cmd = 4;</code>
-       * @param value The cmd to set.
-       * @return This builder for chaining.
-       */
-      public Builder setCmd(int value) {
-        
-        cmd_ = value;
+        method_ = getDefaultInstance().getMethod();
         onChanged();
         return this;
       }
       /**
-       * <code>int32 cmd = 4;</code>
+       * <code>string method = 4;</code>
+       * @param value The bytes for method to set.
        * @return This builder for chaining.
        */
-      public Builder clearCmd() {
+      public Builder setMethodBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
         
-        cmd_ = 0;
+        method_ = value;
         onChanged();
         return this;
       }
@@ -998,23 +2182,23 @@ public final class Server {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:ServerMessage)
+      // @@protoc_insertion_point(builder_scope:ClientMessage)
     }
 
-    // @@protoc_insertion_point(class_scope:ServerMessage)
-    private static final org.octopus.proto.gateway.Server.ServerMessage DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:ClientMessage)
+    private static final org.octopus.proto.gateway.Server.ClientMessage DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new org.octopus.proto.gateway.Server.ServerMessage();
+      DEFAULT_INSTANCE = new org.octopus.proto.gateway.Server.ClientMessage();
     }
 
-    public static org.octopus.proto.gateway.Server.ServerMessage getDefaultInstance() {
+    public static org.octopus.proto.gateway.Server.ClientMessage getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<ServerMessage>
-        PARSER = new com.google.protobuf.AbstractParser<ServerMessage>() {
+    private static final com.google.protobuf.Parser<ClientMessage>
+        PARSER = new com.google.protobuf.AbstractParser<ClientMessage>() {
       @java.lang.Override
-      public ServerMessage parsePartialFrom(
+      public ClientMessage parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1033,17 +2217,17 @@ public final class Server {
       }
     };
 
-    public static com.google.protobuf.Parser<ServerMessage> parser() {
+    public static com.google.protobuf.Parser<ClientMessage> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<ServerMessage> getParserForType() {
+    public com.google.protobuf.Parser<ClientMessage> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public org.octopus.proto.gateway.Server.ServerMessage getDefaultInstanceForType() {
+    public org.octopus.proto.gateway.Server.ClientMessage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1054,6 +2238,11 @@ public final class Server {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_ServerMessage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ClientMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ClientMessage_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1064,10 +2253,14 @@ public final class Server {
   static {
     java.lang.String[] descriptorData = {
       "\n\014server.proto\032\031google/protobuf/any.prot" +
-      "o\"h\n\rServerMessage\022\n\n\002id\030\001 \001(\t\022\r\n\005topic\030" +
-      "\002 \001(\t\022\013\n\003qos\030\003 \001(\005\022\013\n\003cmd\030\004 \001(\005\022\"\n\004body\030" +
-      "\005 \001(\0132\024.google.protobuf.AnyB\033\n\031org.octop" +
-      "us.proto.gatewayb\006proto3"
+      "o\"\201\001\n\rServerMessage\022\021\n\ttrackerId\030\001 \001(\005\022\020" +
+      "\n\010identity\030\002 \001(\t\022\r\n\005topic\030\003 \001(\t\022\013\n\003qos\030\004" +
+      " \001(\005\022\013\n\003cmd\030\005 \001(\005\022\"\n\004body\030\006 \001(\0132\024.google" +
+      ".protobuf.Any\"y\n\rClientMessage\022\021\n\ttracke" +
+      "rId\030\001 \001(\005\022\020\n\010identity\030\002 \001(\t\022\017\n\007service\030\003" +
+      " \001(\t\022\016\n\006method\030\004 \001(\t\022\"\n\004body\030\005 \001(\0132\024.goo" +
+      "gle.protobuf.AnyB\033\n\031org.octopus.proto.ga" +
+      "tewayb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1079,7 +2272,13 @@ public final class Server {
     internal_static_ServerMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ServerMessage_descriptor,
-        new java.lang.String[] { "Id", "Topic", "Qos", "Cmd", "Body", });
+        new java.lang.String[] { "TrackerId", "Identity", "Topic", "Qos", "Cmd", "Body", });
+    internal_static_ClientMessage_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_ClientMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ClientMessage_descriptor,
+        new java.lang.String[] { "TrackerId", "Identity", "Service", "Method", "Body", });
     com.google.protobuf.AnyProto.getDescriptor();
   }
 

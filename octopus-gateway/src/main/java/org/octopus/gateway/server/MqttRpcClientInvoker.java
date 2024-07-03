@@ -1,9 +1,9 @@
 package org.octopus.gateway.server;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-import io.netty.buffer.ByteBuf;
-import org.octopus.gateway.exception.GatewayException;
+import io.netty.handler.codec.mqtt.MqttPublishMessage;
+import org.octopus.gateway.tracker.MqttMsgLogger;
+import org.octopus.proto.gateway.Server;
 import org.octopus.proto.rpc.Rpc;
 import org.octopus.proto.service.auth.Authservice;
 import org.octopus.rpc.client.RpcClient;
@@ -51,28 +51,25 @@ public class MqttRpcClientInvoker {
     /**
      * 转发mqtt消息
      *
-     * @param payload  mqtt消息内容
-     * @param clientId 终端标识
+     * @param publishMsg mqtt发布消息实体
+     * @param clientId   终端标识
      */
-    public static void forwardMsgOneway(ByteBuf payload, String clientId) throws GatewayException {
-        byte[] body = new byte[payload.capacity()];
-        payload.readBytes(body);
 
-        Rpc.RpcRequest request = null;
+    public static void forwardMsgOneway(MqttPublishMessage publishMsg, Server.ClientMessage clientMessage, String clientId) {
+        Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder()
+                .setService(clientMessage.getService())
+                .setMethod(clientMessage.getMethod())
+                .addArgs(clientMessage.getBody())
+                .build();
+
+        // 打印日志
+        MqttMsgLogger.receivePubLog(publishMsg, clientMessage, clientId);
         try {
-            request = Rpc.RpcRequest.parseFrom(body);
-        } catch (InvalidProtocolBufferException e) {
-            throw new GatewayException(e.getMessage());
-        }
-
-        String serviceName = request.getService();
-        LOGGER.info("rpc client send: {}\t{}\t{}", request.getService(), request.getMethod(), clientId);
-
-        try {
-            RpcClient rpcClient = RpcClusterFactory.getRpcClient(serviceName, BalanceType.HASH, clientId);
-            rpcClient.callOneway(request);
+            RpcClient rpcClient = RpcClusterFactory.getRpcClient(clientMessage.getService(), BalanceType.HASH, clientId);
+            rpcClient.callOneway(rpcRequest);
         } catch (RpcClientException e) {
             LOGGER.error("rpc client send msg err", e);
         }
+
     }
 }

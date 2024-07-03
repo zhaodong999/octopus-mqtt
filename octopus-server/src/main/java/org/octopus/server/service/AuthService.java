@@ -11,6 +11,7 @@ import org.octopus.rpc.client.RpcClient;
 import org.octopus.rpc.cluster.BalanceType;
 import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.exception.RpcClientException;
+import org.octopus.rpc.exception.RpcRuntimeException;
 import org.octopus.rpc.server.anno.RpcMethod;
 import org.octopus.rpc.server.anno.RpcService;
 import org.octopus.server.db.mapper.UserMapper;
@@ -18,7 +19,7 @@ import org.octopus.server.db.pojo.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import java.util.Arrays;
 
 @RpcService(name = "authService")
 public class AuthService {
@@ -27,14 +28,19 @@ public class AuthService {
 
     @RpcMethod(name = "auth")
     public Authservice.AuthResult auth(Authservice.UserMessage userMessage) {
-        SqlSession sqlSession = SessionFactoryUtil.getInstance().getSessionFactory().openSession();
-        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-        UserEntity userEntity = mapper.selectByDevice(userMessage.getDevice());
+        UserEntity userEntity = null;
+        try (SqlSession sqlSession = SessionFactoryUtil.getInstance().getSessionFactory().openSession()) {
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            userEntity = mapper.selectByDevice(userMessage.getDevice());
+        } catch (Exception e) {
+            throw new RpcRuntimeException(e.getMessage());
+        }
+
         if (userEntity == null) {
             return Authservice.AuthResult.newBuilder().setAuthType(Authservice.AuthType.NOT_ACCOUNT).build();
         }
 
-        if (Objects.equals(userEntity.getPassword(), userMessage.getPassword())) {
+        if (Arrays.equals(userEntity.getPassword(), userMessage.getPassword().toByteArray())) {
             return Authservice.AuthResult.newBuilder().setAuthType(Authservice.AuthType.LOGIN).build();
         }
 
@@ -48,7 +54,7 @@ public class AuthService {
 
         Server.ServerMessage.Builder builder = Server.ServerMessage.newBuilder();
         builder.setCmd(1);
-        builder.setId("userId_001");
+        builder.setIdentity("userId_001");
         builder.setTopic("/sys/game");
         builder.setBody(Any.pack(StringValue.of("test" + param)));
 

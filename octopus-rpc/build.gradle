@@ -15,11 +15,10 @@ dependencies {
     api 'com.alibaba.nacos:nacos-common:2.1.2'
     api 'com.alibaba.nacos:nacos-api:2.1.2'
 
-//    implementation 'io.netty:netty-all:4.1.109.Final'
-//    implementation 'org.javassist:javassist:3.30.2-GA'
-//    implementation 'com.google.guava:guava:33.2.0-jre'
-//    implementation 'com.alibaba.nacos:nacos-client:2.1.2'
-//    implementation 'com.alibaba.nacos:nacos-common:2.1.2'
-//    implementation 'com.alibaba.nacos:nacos-api:2.1.2'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
 
+test {
+    useJUnitPlatform()
 }

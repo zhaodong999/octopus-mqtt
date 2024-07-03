@@ -28,7 +28,7 @@ public enum GatewayProcessor {
             MqttConnectPayload payload = connectMessage.payload();
             String id = payload.clientIdentifier();
             try {
-                CompletableFuture<Authservice.AuthResult> future = AuthService.auth(payload.clientIdentifier(), payload.userName(), payload.passwordInBytes());
+                CompletableFuture<Authservice.AuthResult> future = MqttRpcClientInvoker.auth(payload.clientIdentifier(), payload.userName(), payload.passwordInBytes());
                 future.whenComplete((authResult, throwable) -> {
                     if (throwable != null) {
                         LOGGER.error("{}\tinvoke rpc err", id, throwable);

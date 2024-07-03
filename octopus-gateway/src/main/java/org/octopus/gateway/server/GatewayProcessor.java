@@ -1,12 +1,10 @@
 package org.octopus.gateway.server;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.mqtt.*;
 import org.octopus.gateway.exception.GatewayException;
 import org.octopus.gateway.netty.AttrKey;
-import org.octopus.proto.rpc.Rpc;
 import org.octopus.proto.service.auth.Authservice;
 import org.octopus.rpc.exception.RpcClientException;
 import org.slf4j.Logger;
@@ -22,9 +20,8 @@ public enum GatewayProcessor {
 
     CONNECT {
         @Override
-        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) throws GatewayException {
+        public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
             MqttConnectMessage connectMessage = (MqttConnectMessage) mqttMessage;
-            LOGGER.info("connectMsg: {}", connectMessage);
             MqttConnectPayload payload = connectMessage.payload();
             String id = payload.clientIdentifier();
             try {
@@ -62,48 +59,23 @@ public enum GatewayProcessor {
         @Override
         public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) throws GatewayException {
             MqttPublishMessage publishMsg = (MqttPublishMessage) mqttMessage;
-            LOGGER.info("publishMsg: {}", publishMsg);
 
             ByteBuf payload = publishMsg.payload();
-            byte[] body = new byte[payload.capacity()];
-            payload.readBytes(body);
-
-            Rpc.RpcRequest request = null;
-            try {
-                request = Rpc.RpcRequest.parseFrom(body);
-            } catch (InvalidProtocolBufferException e) {
-                LOGGER.error("protobuf request parse error", e);
-                throw new GatewayException(e.getMessage());
-            }
-
-            if (request == null) {
-                return;
-            }
-
             String clientId = ctx.channel().attr(AttrKey.CLIENT_ID).get();
             switch (publishMsg.fixedHeader().qosLevel()) {
                 case AT_MOST_ONCE:
                     //最多一次，重复要处理一下
-                    PublishService.handleOne(request, clientId);
+                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
                     break;
                 case AT_LEAST_ONCE:
                     //回复一个publishAck,会传递多次
-                    PublishService.handleOne(request, clientId);
-
-                    MqttFixedHeader fixedHeader =
-                            new MqttFixedHeader(MqttMessageType.PUBACK, false, MqttQoS.AT_MOST_ONCE, false, 0);
-                    MqttMessage pubAckMsg = MqttMessageFactory.newMessage(fixedHeader, MqttMessageIdVariableHeader.from(publishMsg.variableHeader().packetId()), null);
-                    ctx.writeAndFlush(pubAckMsg);
+                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
+                    MqttRespUtil.sendPubAckMessage(publishMsg.variableHeader().packetId(), ctx);
                     break;
                 case EXACTLY_ONCE:
                     //TODO 暂时不支持
-                    PublishService.handleOne(request, clientId);
-
-                    MqttFixedHeader rceFixedHeader =
-                            new MqttFixedHeader(MqttMessageType.PUBREC, false, MqttQoS.AT_MOST_ONCE, false, 0);
-                    MqttMessage pubRecMsg = MqttMessageFactory.newMessage(rceFixedHeader, MqttMessageIdVariableHeader.from(publishMsg.variableHeader().packetId()), null);
-                    ctx.writeAndFlush(pubRecMsg);
-
+                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
+                    MqttRespUtil.sendPubRelMessage(publishMsg.variableHeader().packetId(), ctx);
                     //TODO , 存储当前packetId
                     break;
                 default:

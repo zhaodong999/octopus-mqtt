@@ -1,13 +1,22 @@
 syntax = "proto3";
 
-option java_package= "org.octopus.proto.gateway";
+option java_package = "org.octopus.proto.gateway";
 
 import "google/protobuf/any.proto";
 
-message ServerMessage{
-	string id = 1;
-	string topic = 2;
-	int32 qos = 3;
-	int32 cmd = 4;
-	google.protobuf.Any body = 5;
+message ServerMessage {
+    int32 trackerId = 1;
+    string identity = 2;
+    string topic = 3;
+    int32 qos = 4;
+    int32 cmd = 5;
+    google.protobuf.Any body = 6;
+}
+
+message ClientMessage {
+    int32 trackerId = 1;
+    string identity = 2;
+    string service = 3;
+    string method = 4;
+    google.protobuf.Any body = 5;
 }

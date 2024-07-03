@@ -1,10 +1,13 @@
 package org.octopus.gateway.server;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.mqtt.*;
 import org.octopus.gateway.exception.GatewayException;
 import org.octopus.gateway.netty.AttrKey;
+import org.octopus.gateway.tracker.MqttMsgLogger;
+import org.octopus.proto.gateway.Server;
 import org.octopus.proto.service.auth.Authservice;
 import org.octopus.rpc.exception.RpcClientException;
 import org.slf4j.Logger;
@@ -29,19 +32,19 @@ public enum GatewayProcessor {
                 future.whenComplete((authResult, throwable) -> {
                     if (throwable != null) {
                         LOGGER.error("{}\tinvoke rpc err", id, throwable);
-                        MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
+                        MqttMsgUtil.sendConnAckMsg(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
                         return;
                     }
 
                     if (authResult.getAuthType() != Authservice.AuthType.LOGIN) {
                         LOGGER.warn("{}\t name or password err {}\t{}", id, payload.userName(), payload.passwordInBytes());
-                        MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD, ctx);
+                        MqttMsgUtil.sendConnAckMsg(MqttConnectReturnCode.CONNECTION_REFUSED_BAD_USER_NAME_OR_PASSWORD, ctx);
                         return;
                     }
 
                     //校验成功的情况下
                     ConnectionManager.putCtx(id, ctx);
-                    MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_ACCEPTED, ctx);
+                    MqttMsgUtil.sendConnAckMsg(MqttConnectReturnCode.CONNECTION_ACCEPTED, ctx);
                     //init data
                     ctx.channel().attr(AttrKey.CLIENT_ID).set(id);
                     ctx.channel().attr(AttrKey.SERVER_MSG_ID).set(new AtomicInteger(1));
@@ -50,7 +53,7 @@ public enum GatewayProcessor {
                 });
             } catch (RpcClientException e) {
                 LOGGER.error("auth error", e);
-                MqttRespUtil.sendConnAckMessage(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
+                MqttMsgUtil.sendConnAckMsg(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE, ctx);
             }
         }
     },
@@ -61,21 +64,32 @@ public enum GatewayProcessor {
             MqttPublishMessage publishMsg = (MqttPublishMessage) mqttMessage;
 
             ByteBuf payload = publishMsg.payload();
+            byte[] body = new byte[payload.capacity()];
+            payload.readBytes(body);
+
+
+            Server.ClientMessage clientMessage = null;
+            try {
+                clientMessage = Server.ClientMessage.parseFrom(body);
+            } catch (InvalidProtocolBufferException e) {
+                throw new GatewayException(e.getMessage());
+            }
+
             String clientId = ctx.channel().attr(AttrKey.CLIENT_ID).get();
             switch (publishMsg.fixedHeader().qosLevel()) {
                 case AT_MOST_ONCE:
                     //最多一次，重复要处理一下
-                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
+                    MqttRpcClientInvoker.forwardMsgOneway(publishMsg, clientMessage, clientId);
                     break;
                 case AT_LEAST_ONCE:
                     //回复一个publishAck,会传递多次
-                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
-                    MqttRespUtil.sendPubAckMessage(publishMsg.variableHeader().packetId(), ctx);
+                    MqttRpcClientInvoker.forwardMsgOneway(publishMsg, clientMessage, clientId);
+                    MqttMsgUtil.sendPubAckMsg(publishMsg.variableHeader().packetId(), ctx, clientId);
                     break;
                 case EXACTLY_ONCE:
                     //TODO 暂时不支持
-                    MqttRpcClientInvoker.forwardMsgOneway(payload, clientId);
-                    MqttRespUtil.sendPubRelMessage(publishMsg.variableHeader().packetId(), ctx);
+                    MqttRpcClientInvoker.forwardMsgOneway(publishMsg, clientMessage, clientId);
+                    MqttMsgUtil.sendPubRelMessage(publishMsg.variableHeader().packetId(), ctx);
                     //TODO , 存储当前packetId
                     break;
                 default:
@@ -87,8 +101,8 @@ public enum GatewayProcessor {
     PUBACK {
         @Override
         public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
-            LOGGER.info("mqtt publishAck msg: {}", mqttMessage);
-            //TODO 写入消息队列
+            MqttPubAckMessage pubAckMessage = (MqttPubAckMessage) mqttMessage;
+            MqttMsgLogger.receivePubAckLog(pubAckMessage.variableHeader().messageId(), ctx.channel().attr(AttrKey.CLIENT_ID).get());
         }
     },
 

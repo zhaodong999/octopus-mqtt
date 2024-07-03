@@ -7,10 +7,10 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.octopus.proto.rpc.Rpc;
+import org.octopus.proto.gateway.Server;
 
 
-public class  ClientTest {
+public class ClientTest {
 
     public static void main(String[] args) throws InterruptedException {
         ClientTest clientTest = new ClientTest();
@@ -37,8 +37,9 @@ public class  ClientTest {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setId(1);
 
-        Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder().setService("login").setMethod("test").addArgs(Any.pack(StringValue.of("heihei"))).build();
-        mqttMessage.setPayload(rpcRequest.toByteArray());
+        Server.ClientMessage clientMessage = Server.ClientMessage.newBuilder().setIdentity("userId_001").setTrackerId(1).setService("login").setMethod("test").setBody(Any.pack(StringValue.of("heihei"))).build();
+
+        mqttMessage.setPayload(clientMessage.toByteArray());
         mqttMessage.setQos(1);
         mqttMessage.setRetained(false);
         mqttClient.publish("/sys/game", mqttMessage);

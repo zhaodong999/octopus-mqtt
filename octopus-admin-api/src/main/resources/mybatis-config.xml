@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC">
+                <property name="autoCommit" value="true"/>
+                </transactionManager>
+            <dataSource type="org.octopus.db.HikariDataSourceFactory">
+                <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/zd"/>
+                <property name="username" value="root"/>
+                <property name="password" value="!QAZxsw2"/>
+
+                <!-- 应用HikariCP特定的配置属性 -->
+                <property name="maximumPoolSize" value="10"/>
+                <property name="minimumIdle" value="5"/>
+                <property name="idleTimeout" value="30000"/>
+                <property name="maxLifetime" value="1800000"/>
+                <property name="connectionTimeout" value="30000"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper class="org.octopus.server.db.mapper.UserMapper"/> <!-- 各种xml映射文件的包路径 -->
+    </mappers>
+</configuration>

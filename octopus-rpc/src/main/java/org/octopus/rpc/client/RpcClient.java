@@ -1,9 +1,9 @@
 package org.octopus.rpc.client;
 
 import io.netty.channel.nio.NioEventLoopGroup;
+import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.EndPoint;
 import org.octopus.rpc.exception.RpcClientException;
-import org.octopus.proto.rpc.Rpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class RpcClient implements Closeable {
         rpcConnection = new RpcConnection(endPoint, nioEventLoopGroup);
         try {
             rpcConnection.connect();
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
             LOGGER.error("rpc client connect err", e);
         }
     }
@@ -53,7 +53,7 @@ public class RpcClient implements Closeable {
         return callBack;
     }
 
-    public EndPoint getEndPoint(){
+    public EndPoint getEndPoint() {
         return endPoint;
     }
 

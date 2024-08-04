@@ -5,6 +5,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.octopus.admin.api.filter.CORSFilter;
 import org.octopus.admin.api.provider.GsonMessageBodyHandler;
+import org.octopus.admin.api.provider.ResponseFilter;
 import org.octopus.admin.api.rest.MsgRest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,10 @@ public class AdminApiServer {
 
             Set<Class<?>> resources = new HashSet<>();
             resources.add(GsonMessageBodyHandler.class);
+            resources.add(ResponseFilter.class);
             resources.add(CORSFilter.class);
-
             resources.add(MsgRest.class);
+
             ResourceConfig resourceConfig = new ResourceConfig(resources);
 
             URI baseUri = UriBuilder.fromUri("http://0.0.0.0/").port(Integer.parseInt(port)).build();

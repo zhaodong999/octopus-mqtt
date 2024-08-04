@@ -1,11 +1,14 @@
 package org.octopus.rpc.client;
 
+import com.codahale.metrics.Meter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.octopus.monitor.metric.MetricRegistryType;
+import org.octopus.monitor.metric.MetricsRegistryManager;
 import org.octopus.rpc.*;
 import org.octopus.rpc.cluster.RpcClientManager;
 import org.octopus.rpc.exception.RpcClientException;
@@ -22,6 +25,7 @@ public class RpcConnection implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcConnection.class);
 
+    private static final Meter RPC_CLIENT_REQUEST_QPS = MetricsRegistryManager.getInstance().getRegistry(MetricRegistryType.RPC).meter("rpc.client.request.qps");
     private final Bootstrap bootstrap;
 
     private final EndPoint endPoint;
@@ -86,6 +90,7 @@ public class RpcConnection implements Closeable {
 
         channel.writeAndFlush(rpcMsg).addListener(f -> {
             if (f.isSuccess()) {
+                RPC_CLIENT_REQUEST_QPS.mark();
                 RequestHolder.put(id, callBack);
                 LOGGER.info("send request trackerId:\t{}", id);
             } else {

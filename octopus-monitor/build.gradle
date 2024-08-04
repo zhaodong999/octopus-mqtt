@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = 'org.octopus'
+version = '1.0-SNAPSHOT'
+
+
+dependencies {
+    implementation project(':')
+    api 'io.dropwizard.metrics:metrics-core:4.2.26'
+}
+
+test {
+    useJUnitPlatform()
+}

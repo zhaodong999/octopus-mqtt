@@ -8,6 +8,7 @@ group = 'org.octopus'
 dependencies {
     implementation project(':')
     implementation project(':octopus-proto')
+    implementation project(':octopus-monitor')
     api 'io.netty:netty-all:4.1.109.Final'
     api 'org.javassist:javassist:3.30.2-GA'
     api 'com.google.guava:guava:33.2.0-jre'

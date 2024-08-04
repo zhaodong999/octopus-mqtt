@@ -1,15 +1,18 @@
 package org.octopus.rpc.server;
 
+import com.codahale.metrics.Meter;
 import com.google.protobuf.Any;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.octopus.monitor.metric.MetricRegistryType;
+import org.octopus.monitor.metric.MetricsRegistryManager;
+import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.ProtoCommand;
 import org.octopus.rpc.RpcMsg;
 import org.octopus.rpc.SerializeType;
 import org.octopus.rpc.VariableHeader;
-import org.octopus.proto.rpc.Rpc;
 import org.octopus.rpc.service.RpcProxyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,9 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServerHandler.class);
 
+    private static final Meter PRC_SERVER_REQUEST_METER_QPS = MetricsRegistryManager.getInstance().getRegistry(MetricRegistryType.RPC).meter("rpc.server.request.qps");
+
+    private static final Meter PRC_SERVER_REQUEST_METER_EXCEPTION = MetricsRegistryManager.getInstance().getRegistry(MetricRegistryType.RPC).meter("rpc.server.request.exception");
     private final RpcProxyManager rpcServiceManager;
 
     public RpcServerHandler(RpcProxyManager rpcServiceManager) {
@@ -34,6 +40,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
         }
 
         if (msg.getFixedHeader().getProtoCommand() == ProtoCommand.REQUEST) {
+            PRC_SERVER_REQUEST_METER_QPS.mark();
             byte[] payLoad = msg.getPayLoad();
             Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.parseFrom(payLoad);
             Any[] params = new Any[rpcRequest.getArgsCount()];
@@ -92,6 +99,7 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<RpcMsg> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         LOGGER.error("rpc server error", cause);
+        PRC_SERVER_REQUEST_METER_EXCEPTION.mark();
         ctx.close();
     }
 }

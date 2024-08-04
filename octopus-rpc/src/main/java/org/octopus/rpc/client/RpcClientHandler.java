@@ -1,9 +1,12 @@
 package org.octopus.rpc.client;
 
+import com.codahale.metrics.Meter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.octopus.monitor.metric.MetricRegistryType;
+import org.octopus.monitor.metric.MetricsRegistryManager;
 import org.octopus.rpc.ProtoCommand;
 import org.octopus.rpc.RpcMsg;
 import org.octopus.rpc.SerializeType;
@@ -17,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcClientHandler.class);
+
+    private static final Meter RPC_CLIENT_REQUEST_EXCEPTION = MetricsRegistryManager.getInstance().getRegistry(MetricRegistryType.RPC).meter("rpc.client.request.exception");
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcMsg msg) throws Exception {
@@ -62,6 +67,7 @@ public class RpcClientHandler extends SimpleChannelInboundHandler<RpcMsg> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         LOGGER.error("rpc client error", cause);
+        RPC_CLIENT_REQUEST_EXCEPTION.mark();
         ctx.close();
     }
 }

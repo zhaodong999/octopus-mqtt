@@ -22,8 +22,6 @@ class HikariDsTest {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
             UserEntity userEntity = new UserEntity();
             userEntity.setName("zd");
-            userEntity.setAge(18);
-            userEntity.setEmail("zhaodong999@sina.com");
             userEntity.setCreateTime(new Date());
             int value = userMapper.insert(userEntity);
             System.out.println(value);

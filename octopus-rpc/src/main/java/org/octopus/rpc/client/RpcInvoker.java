@@ -22,6 +22,19 @@ public class RpcInvoker {
 
     }
 
+    public static <P extends Message> void invokeOneway(String service, String method, P param, String balanceId) throws RpcClientException {
+        // 构造请求
+        Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder()
+                .setService(service)
+                .setMethod(method)
+                .addArgs(Any.pack(param))
+                .build();
+
+        // 调用远程服务
+        RpcClient rpcClient = RpcClusterFactory.getRpcClient(service, BalanceType.HASH, balanceId);
+        rpcClient.callOneway(rpcRequest);
+    }
+
     public static <P extends Message, R extends Message> CompletableFuture<R> invoke(String service, String method, P param, Class<R> resultClass, String requestId, String balanceId) throws RpcClientException {
         // 构造请求
         Rpc.RpcRequest rpcRequest = Rpc.RpcRequest.newBuilder()

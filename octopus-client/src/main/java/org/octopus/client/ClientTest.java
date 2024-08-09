@@ -24,12 +24,12 @@ public class ClientTest {
     }
 
     public void start() throws MqttException {
-        MqttClient mqttClient = new MqttClient("tcp://localhost:8085", "userId_001", new MemoryPersistence());
+        MqttClient mqttClient = new MqttClient("tcp://localhost:8085", "deviceId", new MemoryPersistence());
         mqttClient.setCallback(new MqttCallBack());
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setUserName("zd");
-        options.setPassword("fff".toCharArray());
+        options.setPassword("test".toCharArray());
         mqttClient.connect(options);
 
         mqttClient.subscribe("/sys/game");
@@ -37,7 +37,7 @@ public class ClientTest {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setId(1);
 
-        Server.ClientMessage clientMessage = Server.ClientMessage.newBuilder().setIdentity("userId_001").setTrackerId(1).setService("login").setMethod("test").setBody(Any.pack(StringValue.of("heihei"))).build();
+        Server.ClientMessage clientMessage = Server.ClientMessage.newBuilder().setIdentity("userId_001").setTrackerId(1).setService("msgService").setMethod("receive").setBody(Any.pack(StringValue.of("heihei"))).build();
 
         mqttMessage.setPayload(clientMessage.toByteArray());
         mqttMessage.setQos(1);

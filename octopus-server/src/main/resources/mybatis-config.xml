@@ -10,9 +10,9 @@
                 </transactionManager>
             <dataSource type="org.octopus.db.HikariDataSourceFactory">
                 <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/zd"/>
-                <property name="username" value="root"/>
-                <property name="password" value="!QAZxsw2"/>
+                <property name="jdbcUrl" value="jdbc:mysql://home.antaohua.com:3306/lucifer"/>
+                <property name="username" value="antaohua"/>
+                <property name="password" value="663463"/>
 
                 <!-- 应用HikariCP特定的配置属性 -->
                 <property name="maximumPoolSize" value="10"/>

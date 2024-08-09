@@ -25,7 +25,7 @@ public class RpcCluster implements Observer {
 
     private final CopyOnWriteArrayList<RpcClient> rpcClients = new CopyOnWriteArrayList<>();
 
-    private List<Instance> lastInstances;
+    private List<Instance> lastInstances = new ArrayList<>();
 
     public RpcCluster(String name, List<Instance> rpcInstances) {
         this.name = name;

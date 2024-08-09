@@ -4,6 +4,8 @@ package org.octopus.gateway;
 import org.octopus.gateway.config.GatewayConfigManager;
 import org.octopus.gateway.server.MqttServer;
 import org.octopus.gateway.service.SendService;
+import org.octopus.monitor.metric.MetricRegistryType;
+import org.octopus.monitor.metric.MetricsRegistryManager;
 import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.cluster.RpcServiceLocator;
 import org.octopus.rpc.exception.RpcRuntimeException;
@@ -20,6 +22,9 @@ public class GateWayServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(GateWayServer.class);
 
     private void start() throws RpcRuntimeException {
+        MetricsRegistryManager.getInstance().register(MetricRegistryType.GATEWAY, "org.octopus.monitor.gateway");
+        MetricsRegistryManager.getInstance().register(MetricRegistryType.RPC, "org.octopus.monitor.rpc");
+
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new SendService());
 

@@ -8,4 +8,5 @@ group = 'org.octopus'
 dependencies {
     implementation project(':octopus-proto')
     implementation project(':octopus-rpc')
+    implementation project(':octopus-monitor')
 }

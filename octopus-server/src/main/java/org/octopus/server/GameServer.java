@@ -1,12 +1,15 @@
 package org.octopus.server;
 
 import org.octopus.db.SessionFactoryUtil;
+import org.octopus.monitor.metric.MetricRegistryType;
+import org.octopus.monitor.metric.MetricsRegistryManager;
 import org.octopus.rpc.cluster.RpcClusterFactory;
 import org.octopus.rpc.cluster.RpcServiceLocator;
 import org.octopus.rpc.server.RpcServer;
 import org.octopus.rpc.service.RpcProxyManager;
 import org.octopus.server.config.ServerConfigManager;
 import org.octopus.server.service.AuthService;
+import org.octopus.server.service.MsgService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +20,12 @@ public class GameServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
 
     public void start() throws IOException {
+        MetricsRegistryManager.getInstance().register(MetricRegistryType.RPC, "com.octopus.monitor.rpc");
+
         //注册服务
         RpcProxyManager rpcProxyManager = new RpcProxyManager();
         rpcProxyManager.register(new AuthService());
+        rpcProxyManager.register(new MsgService());
 
         //初始化数据库
         SessionFactoryUtil.getInstance().init();

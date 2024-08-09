@@ -12,22 +12,17 @@ import java.util.concurrent.TimeUnit;
 
 public class MetricsRegistryManager {
 
-    private static volatile MetricsRegistryManager instance;
-
     private MetricsRegistryManager() {
+    }
+
+    private static class MetricsRegistryManagerHolder {
+        private static final MetricsRegistryManager INSTANCE = new MetricsRegistryManager();
     }
 
     private static final ConcurrentMap<MetricRegistryType, ScheduledReporter> metricRegisterReporters = new ConcurrentHashMap<>();
 
     public static MetricsRegistryManager getInstance() {
-        if (instance == null) {
-            synchronized (MetricsRegistryManager.class) {
-                if (instance == null) {
-                    instance = new MetricsRegistryManager();
-                }
-            }
-        }
-        return instance;
+        return MetricsRegistryManagerHolder.INSTANCE;
     }
 
     public void register(MetricRegistryType metricRegisterType, String logName) {
@@ -54,10 +49,6 @@ public class MetricsRegistryManager {
     }
 
     public MetricRegistry getRegistry(MetricRegistryType metricRegisterType) {
-        if (!metricRegisterReporters.containsKey(metricRegisterType)) {
-            return null;
-        }
-
         return SharedMetricRegistries.getOrCreate(metricRegisterType.getName());
     }
 }

@@ -9,6 +9,6 @@ public interface UserMapper {
     @Insert("INSERT INTO user(name, device, password, createTime) values (#{name}, #{device}, #{password}, #{createTime})")
     int insert(UserEntity userEntity);
 
-    @Select("SELECT * FROM user WHERE device = #{device}")
-    UserEntity selectByDevice(String device);
+    @Select("SELECT * FROM user WHERE name = #{userName}")
+    UserEntity selectByName(String userName);
 }

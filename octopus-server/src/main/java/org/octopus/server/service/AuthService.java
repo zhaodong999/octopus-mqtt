@@ -1,16 +1,8 @@
 package org.octopus.server.service;
 
-import com.google.protobuf.Any;
-import com.google.protobuf.StringValue;
 import org.apache.ibatis.session.SqlSession;
 import org.octopus.db.SessionFactoryUtil;
-import org.octopus.proto.gateway.Server;
-import org.octopus.proto.rpc.Rpc;
 import org.octopus.proto.service.auth.Authservice;
-import org.octopus.rpc.client.RpcClient;
-import org.octopus.rpc.cluster.BalanceType;
-import org.octopus.rpc.cluster.RpcClusterFactory;
-import org.octopus.rpc.exception.RpcClientException;
 import org.octopus.rpc.exception.RpcRuntimeException;
 import org.octopus.rpc.server.anno.RpcMethod;
 import org.octopus.rpc.server.anno.RpcService;
@@ -31,7 +23,7 @@ public class AuthService {
         UserEntity userEntity = null;
         try (SqlSession sqlSession = SessionFactoryUtil.getInstance().getSessionFactory().openSession()) {
             UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-            userEntity = mapper.selectByDevice(userMessage.getDevice());
+            userEntity = mapper.selectByName(userMessage.getName());
         } catch (Exception e) {
             throw new RpcRuntimeException(e.getMessage());
         }
@@ -48,22 +40,5 @@ public class AuthService {
     }
 
 
-    @RpcMethod(name = "test")
-    public void test(String param) {
-        RpcClient rpcClient = RpcClusterFactory.getRpcClient("gate", BalanceType.HASH, "userId");
 
-        Server.ServerMessage.Builder builder = Server.ServerMessage.newBuilder();
-        builder.setCmd(1);
-        builder.setIdentity("userId_001");
-        builder.setTopic("/sys/game");
-        builder.setBody(Any.pack(StringValue.of("test" + param)));
-
-        Rpc.RpcRequest.Builder requesBuilder = Rpc.RpcRequest.newBuilder();
-        Rpc.RpcRequest rpcRequest = requesBuilder.setService("gate").setMethod("publish").addArgs(Any.pack(builder.build())).build();
-        try {
-            rpcClient.callOneway(rpcRequest);
-        } catch (RpcClientException e) {
-            LOGGER.info("test invoke rpc err", e);
-        }
-    }
 }

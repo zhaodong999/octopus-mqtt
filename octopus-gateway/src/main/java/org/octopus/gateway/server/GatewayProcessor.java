@@ -26,7 +26,7 @@ public enum GatewayProcessor {
         public void handle(ChannelHandlerContext ctx, MqttMessage mqttMessage) {
             MqttConnectMessage connectMessage = (MqttConnectMessage) mqttMessage;
             MqttConnectPayload payload = connectMessage.payload();
-            String id = payload.clientIdentifier();
+            String id = payload.userName();
             try {
                 CompletableFuture<Authservice.AuthResult> future = MqttRpcClientInvoker.auth(payload.clientIdentifier(), payload.userName(), payload.passwordInBytes());
                 future.whenComplete((authResult, throwable) -> {
